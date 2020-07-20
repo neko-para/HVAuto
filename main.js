@@ -63,14 +63,17 @@ async function main() {
 			if (!battle.spirit_stance && battle.spirit >= 200 && battle.charge >= 9) {
 				console.log('Enable spirit');
 				nextAction = hvauto.triggerSpirit();
+				continue;
 			} else if (battle.spirit_stance && battle.spirit < 150) {
 				console.log('Disable spirit');
 				nextAction = hvauto.triggerSpirit();
+				continue;
 			}
 			let target = 0;
 			for (let i = 0; i < battle.monster.length; ++i) {
 				if (battle.monster[i].isboss) {
 					target = i + 1;
+					break;
 				} else if (target == 0 && battle.monster[i].alive) {
 					target = i + 1;
 				}

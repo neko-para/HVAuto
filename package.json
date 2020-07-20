@@ -13,7 +13,6 @@
   "license": "MIT",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "node-abort-controller": "^1.1.0",
     "node-fetch": "^2.6.0",
     "zlib": "^1.0.5"
   },

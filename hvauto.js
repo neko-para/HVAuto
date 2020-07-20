@@ -1,5 +1,4 @@
 const fetch = require('node-fetch');
-const AbortController = require('node-abort-controller');
 let cheerio = require('cheerio');
 let process = require('process');
 let exec = require('child_process').exec;
@@ -11,21 +10,17 @@ hvauto.root = "https://hentaiverse.org/";
 hvauto.battle = {};
 
 hvauto.request = async function (url, opt) {
-	function doRequest() {
-		let controller = new AbortController();
-		let signal = controller.signal;
-		let timer = setTimeout(() => controller.abort(), 10000);
-
-		return fetch(url, { ...opt, signal }).then(res => {
-			clearTimeout(timer);
-			return res;
-		}).catch(e => {
-			console.log('request failed with ' + e + ', retrying...');
-			return doRequest();
-		});
+	let res;
+	for (;;) {
+		try {
+			res = await fetch(url, opt);
+			break;
+		} catch (e) {
+			console.log('Request ' + url + ' failed, error: ' + e + '. Retrying...');
+		}
 	}
-	return doRequest();
-};
+	return res;
+}
 
 hvauto.requestPage = async function (url) {
 	let res = await hvauto.request(url, {

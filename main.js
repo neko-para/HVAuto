@@ -15,18 +15,13 @@ async function main() {
 		let nextAction = null;
 		do {
 			console.log('Health: ' + battle.health + ', Mana: ' + battle.mana + ', Spirit: ' + battle.spirit + ', Charge: ' + battle.charge);
-			let target = 0;
-			for (let i = 0; i < battle.monster.length; ++i) {
-				if (battle.monster[i].alive) {
-					target = i + 1;
-					break;
-				}
-			}
 			if (battle.item[999]) {
 				if (battle.item[999].name == 'Mana Gem' && battle.mana < 300) {
+					console.log('Use mana gem');
 					nextAction = hvauto.useItem(0, '999');
 					continue;
 				} else if (battle.item[999].name == 'Health Gem' && battle.health < 4500) {
+					console.log('Use health gem');
 					nextAction = hvauto.useItem(0, '999');
 					continue;
 				}
@@ -61,7 +56,15 @@ async function main() {
 					}
 				}
 			}
-			console.log('Normat attack ' + target);
+			let target = 0;
+			for (let i = 0; i < battle.monster.length; ++i) {
+				if (battle.monster[i].isboss) {
+					target = i + 1;
+				} else if (target == 0 && battle.monster[i].alive) {
+					target = i + 1;
+				}
+			}
+			console.log('Normal attack ' + target);
 			nextAction = hvauto.normalAttack(target);
 		} while (await hvauto.doAction(nextAction));
 	}

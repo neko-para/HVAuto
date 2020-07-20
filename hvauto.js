@@ -1,7 +1,8 @@
 const fetch = require('node-fetch');
 let cheerio = require('cheerio');
-let Buffer = require("buffer").Buffer;
-let hvcookie = "";
+let process = require('process');
+let exec = require('child_process').exec;
+let Buffer = require('buffer').Buffer;
 let hvauto = {};
 
 hvauto.root = "https://hentaiverse.org/";
@@ -33,7 +34,7 @@ hvauto.requestPage = async function (url) {
 			"sec-fetch-user": "?1",
 			"upgrade-insecure-requests": "1",
 			"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36",
-			"cookie": hvcookie
+			"cookie": hvauto.cookie
 		},
 		"referrerPolicy": "no-referrer-when-downgrade",
 		"body": null,
@@ -59,7 +60,7 @@ hvauto.requestJson = async function (body) {
 			"sec-fetch-mode": "cors",
 			"sec-fetch-site": "same-origin",
 			"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36",
-			"cookie": hvcookie
+			"cookie": hvauto.cookie
 		},
 		"referrer": "https://hentaiverse.org/",
 		"referrerPolicy": "no-referrer-when-downgrade",
@@ -96,7 +97,7 @@ hvauto.parseSpellScript = function (script) {
 };
 
 hvauto.init = async function (cookie) {
-	hvcookie = cookie;
+	hvauto.cookie = cookie;
 	let $ = cheerio.load(await hvauto.requestPage(hvauto.root));
 	if ($('#mainpane').children('#battle_top').length > 0) {
 		hvauto.battle.token = /var battle_token = "([a-z0-9]+)";/.exec($('#mainpane').children('script').eq(1).html())[1];
@@ -187,6 +188,16 @@ hvauto.init = async function (cookie) {
 		return true;
 	} else if ($('#mainpane').children('#riddlemaster').length > 0) {
 		console.log('Riddle master appear!!! Open your browser and finish it.');
+		switch (process.platform) {
+			case 'win32':
+				exec('start ' + hvauto.root);
+				break;
+			case 'darwin':
+				exec('open ' + hvauto.root);
+				break;
+			default:
+				exec('xdg-open ' + hvauto.root);
+		}
 		return false;
 	} else {
 		return false;

@@ -24,6 +24,10 @@ async function main() {
 					console.log('Use health gem');
 					nextAction = hvauto.useItem(0, '999');
 					continue;
+				} else if (battle.item[999].name == 'Spirit Gem' && battle.spirit < 300) {
+					console.log('Use spirit gem');
+					nextAction = hvauto.useItem(0, '999');
+					continue;
 				}
 			}
 			if (battle.health < 4000) {
@@ -55,6 +59,13 @@ async function main() {
 						continue;
 					}
 				}
+			}
+			if (!battle.spirit_stance && battle.spirit >= 200 && battle.charge >= 9) {
+				console.log('Enable spirit');
+				nextAction = hvauto.triggerSpirit();
+			} else if (battle.spirit_stance && battle.spirit < 150) {
+				console.log('Disable spirit');
+				nextAction = hvauto.triggerSpirit();
 			}
 			let target = 0;
 			for (let i = 0; i < battle.monster.length; ++i) {

@@ -116,6 +116,7 @@ hvauto.init = async function (cookie) {
 		}
 		hvauto.battle.mana = $('#vrm').text();
 		hvauto.battle.spirit = $('#vrs').text();
+		hvauto.battle.spirit_stance = $('#ckey_spirit').attr('src') == '/y/battle/spirit_a.png';
 		hvauto.battle.skills = {}; // both skills and magic are in it
 		$('#table_skills .bts').children('div').each(function (i, e) {
 			let obj = hvauto.parseSpellScript($(this).attr('onmouseover'));
@@ -221,6 +222,17 @@ hvauto.triggerSkill = function (target, skill) {
 		'mode': 'magic',
 		'skill': skill,
 		'target': target,
+		'token': hvauto.battle.token,
+		'type': 'battle'
+	};
+};
+
+hvauto.triggerSpirit = function() { // both active and inactive use this
+	return {
+		'method': 'action',
+		'mode': 'spirit',
+		'skill': 0,
+		'target': 0,
 		'token': hvauto.battle.token,
 		'type': 'battle'
 	};
@@ -467,6 +479,11 @@ hvauto.doAction = async function (obj) {
 	res['textlog'].forEach(t => {
 		let text = t['t'];
 		hvauto.battle.log.push(text);
+		if (text == 'Spirit Stance Engaged') {
+			hvauto.battle.spirit_stance = true;
+		} else if (text == 'Spirit Stance Disabled') {
+			hvauto.battle.spirit_stance = false;
+		}
 		if (hvauto.handleLog != undefined) {
 			hvauto.handleLog(text);
 		}

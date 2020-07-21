@@ -10,9 +10,7 @@
   "pkg": {
     "scripts": [
       "main.js",
-      "hvauto.js",
-      "cookie.js",
-      "zh_CN.js"
+      "hvauto.js"
     ],
     "targets": [
       "node12-win-x64"

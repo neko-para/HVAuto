@@ -209,6 +209,9 @@ hvauto.normalAttack = function (target) {
 };
 
 hvauto.triggerSkill = function (target, skill) {
+	/*
+		@skill<int>	should be the id of skill
+	*/
 	return {
 		'method': 'action',
 		'mode': 'magic',
@@ -358,6 +361,9 @@ hvauto.itemInfo = {
 };
 
 hvauto.useItem = function (target, item) { // maybe scrolls will use target.
+	/*
+		@skill<String>	should be a string of position(aka 1, S1(need check), 999('P'))
+	*/
 	return {
 		'method': 'action',
 		'mode': 'items',

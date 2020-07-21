@@ -24,6 +24,7 @@ let dicts = {
 	'Stunned': '眩晕',
 	'Penetrated Armor': '破甲',
 
+	'Cure': '治疗术',
 	'Regen': '恢复术'
 };
 
@@ -61,7 +62,7 @@ let rules = [
 		'pat': '$1闪避了你的攻击。'
 	},
 	{
-		'reg': /^(.+) misses the attack againt you\.$/,
+		'reg': /^(.+) misses the attack against you\.$/,
 		'pat': '你闪避了$1的攻击。'
 	},
 	{
@@ -99,6 +100,18 @@ let rules = [
 	{
 		'reg': /^(.+) dropped <span style="color:#[A-F0-9]{6}">\[(.+)\]<\/span>$/,
 		'pat': '$1掉落了$2。'
+	},
+	{
+		'reg': /^You gain (\d+) EXP!$/,
+		'pat': '你获得了$1点经验！'
+	},
+	{
+		'reg': /^You are Victorious!$/,
+		'pat': '你胜利了！'
+	},
+	{
+		'reg': /^Spawned Monster (.): MID=(\d+) \((.+)\) LV=(\d+) HP=(\d+)$/,
+		'pat': '生成怪物$1：编号$2\t级别$4\t血量$5\t名称$3'
 	}
 ];
 

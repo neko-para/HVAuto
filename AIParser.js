@@ -93,8 +93,8 @@ rule.forEach(row => {
 		tempRule.action = (() => {
 			let skill = /^CAST '(.+)'$/.exec(row)[1];
 			return (hvauto) => {
-				if (hvauto.battle.skill[skill]) {
-					let sk = hvauto.battle.skill[skill];
+				if (hvauto.battle.skills[skill]) {
+					let sk = hvauto.battle.skills[skill];
 					if (hvauto.battle.mana >= sk.mana && hvauto.battle.charge >= sk.charge && sk.available) {
 						return {
 							act: hvauto.triggerSkill(0, sk.id),
@@ -117,7 +117,7 @@ rule.forEach(row => {
 		case 'SPIRIT':
 			tempRule.precond.push((hvauto) => { return hvauto.battle.spirit_stance; });
 			return;
-		case 'NOSPIRIT':
+		case 'NOTSPIRIT':
 			tempRule.precond.push((hvauto) => { return !hvauto.battle.spirit_stance; });
 			return;
 		case 'USE ITEMP':
@@ -177,7 +177,8 @@ rule.forEach(row => {
 			};
 			return;
 	}
-	
+	console.log('Unknown action/condition <' + row + '>');
+	abort();
 });
 
 module.exports = function (hvauto) {

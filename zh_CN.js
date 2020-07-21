@@ -23,6 +23,7 @@ let dicts = {
 	'Overwhelming Strikes': '压倒性的攻击',
 	'Stunned': '眩晕',
 	'Penetrated Armor': '破甲',
+	'Searing Skin': '烧灼的皮肤',
 
 	'one-handed weapon': '单手武器',
 	'two-handed weapon': '双手武器',
@@ -37,8 +38,10 @@ let dicts = {
 	'deprecating magic': '减益魔法',
 	'supportive magic': '增益魔法',
 
+	'Channeling': '引导',
 	'Cure': '治疗术',
 	'Regen': '恢复术',
+	'Protection': '护盾',
 	'Replenishment': '补给'
 };
 
@@ -50,6 +53,10 @@ let rules = [
 	{
 		'reg': /^([^,.]+) crits? ([^,.]+) for (\d+) ([^,.]+) damage\.$/,
 		'pat': '@<$1>对@<$2>暴击，造成了$3点@<$4>伤害。'
+	},
+	{
+		'reg': /^Your ([^,.]+) hits ([^,.]+) for (\d+) points of ([^,.]+) damage\.$/,
+		'pat': '你的@<$1>对@<$2>造成了$3点@<$4>伤害。'
 	},
 	{
 		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+), and hits? ([^,.]+) for (\d+) ([^,.]+) damage$/,

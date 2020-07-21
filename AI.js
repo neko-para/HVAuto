@@ -47,6 +47,12 @@ module.exports = function (hvauto) {
 		console.log('Disable spirit');
 		return hvauto.triggerSpirit();
 	}
+	if (hvauto.findEffect('Channeling') != null && hvauto.findEffect('Protection') == null) {
+		if (battle.mana >= battle.skills.Protection.mana && battle.skills.Protection.available) {
+			console.log('As channeling, cast protection');
+			return hvauto.triggerSkill(0, battle.skills.Protection.id);
+		}
+	}
 	let target = 0;
 	for (let i = 0; i < battle.monster.length; ++i) {
 		if (battle.monster[i].isboss) {

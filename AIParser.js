@@ -1,11 +1,12 @@
 const fs = require('fs');
 const { abort } = require('process');
 
-let rule = fs.readFileSync('AI.txt').toString().split('\n');
+let rule = fs.readFileSync('AI.txt').toString().split(/\r?\n/);
 
 let rules = [];
 
 let tempRule = {
+	src: [],
 	precond: [],
 	action: null
 };
@@ -25,6 +26,7 @@ rule.forEach(row => {
 	}
 	row = row.replace(/^[\t ]*/, '');
 	row = row.replace(/[\t ]*$/, '');
+	tempRule.src.push(row);
 	if (/^HAS '.+'$/.exec(row)) {
 		tempRule.precond.push((() => {
 			let item = /^HAS '(.+)'$/.exec(row)[1];
@@ -36,9 +38,9 @@ rule.forEach(row => {
 	}
 	if (/^\S+ (?:<|>|<=|>=|=|!=) [.\d]+$/.exec(row)) {
 		tempRule.precond.push((() => {
-			let mat = /^(health|mana|spirit|charge) (<|>|<=|>=|=|!=) ([.\d]+)$/.exec(row)[1];
+			let mat = /^(health|mana|spirit|charge) (<|>|<=|>=|=|!=) ([.\d]+)$/.exec(row);
 			return (hvauto) => {
-				return op[mat[2]](hvauto.battle[mat[1]], Number(mat[3]));
+				return (op[mat[2]])(hvauto.battle[mat[1]], Number(mat[3]));
 			};
 		})());
 		return;
@@ -81,6 +83,7 @@ rule.forEach(row => {
 		})();
 		rules.push(tempRule);
 		tempRule = {
+			src: [],
 			precond: [],
 			action: null
 		};
@@ -104,6 +107,7 @@ rule.forEach(row => {
 		})();
 		rules.push(tempRule);
 		tempRule = {
+			src: [],
 			precond: [],
 			action: null
 		};
@@ -116,6 +120,20 @@ rule.forEach(row => {
 		case 'NOSPIRIT':
 			tempRule.precond.push((hvauto) => { return !hvauto.battle.spirit_stance; });
 			return;
+		case 'USE ITEMP':
+			tempRule.action = (hvauto) => {
+				return { 
+					act: hvauto.useItem(0, '999'),
+					msg: 'use itemp'
+				};
+			};
+			rules.push(tempRule);
+			tempRule = {
+				src: [],
+				precond: [],
+				action: null
+			};
+			return;
 		case 'TRIGSPIRIT':
 			tempRule.action = (hvauto) => {
 				return {
@@ -125,6 +143,7 @@ rule.forEach(row => {
 			};
 			rules.push(tempRule);
 			tempRule = {
+				src: [],
 				precond: [],
 				action: null
 			};
@@ -152,6 +171,7 @@ rule.forEach(row => {
 			};
 			rules.push(tempRule);
 			tempRule = {
+				src: [],
 				precond: [],
 				action: null
 			};
@@ -165,16 +185,22 @@ module.exports = function (hvauto) {
 		let r = rules[i];
 		let ok = true;
 		for (let j in r.precond) {
+			// console.log(r.src[j])
 			if (!r.precond[j](hvauto)) {
+				// console.log('failed');
 				ok = false;
 				break;
 			}
+			// console.log('pass');
 		}
 		if (ok) {
+			// console.log(r.src[r.precond.length]);
 			let action = r.action(hvauto);
 			if (action) {
+				// console.log('pass');
 				return action;
 			}
+			// console.log('failed');
 		}
 	}
 	console.log('No action!!!');

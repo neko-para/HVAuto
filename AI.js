@@ -43,7 +43,7 @@ module.exports = function (hvauto) {
 	if (!battle.spirit_stance && battle.spirit >= 200 && battle.charge >= 9) {
 		console.log('Enable spirit');
 		return hvauto.triggerSpirit();
-	} else if (battle.spirit_stance && battle.spirit < 150) {
+	} else if (battle.spirit_stance && battle.spirit < 170) {
 		console.log('Disable spirit');
 		return hvauto.triggerSpirit();
 	}

@@ -27,16 +27,18 @@ let dicts = {
 
 	'one-handed weapon': '单手武器',
 	'two-handed weapon': '双手武器',
-	'dual wielding': '双持武器',
+	'dual wielding': '双持武器', // need check
 	'cloth armor': '布甲',
 	'light armor': '轻甲',
 	'heavy armor': '重甲',
-	'staff': '法杖',
+	'staff': '法杖', // need check
 	'elemental magic': '元素魔法',
 	'divine magic': '神圣魔法',
 	'forbidden magic': '黑暗魔法',
 	'deprecating magic': '减益魔法',
 	'supportive magic': '增益魔法',
+
+	'spike shield': '刺盾',
 
 	'Channeling': '引导',
 	'Cure': '治疗术',

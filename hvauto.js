@@ -1,8 +1,7 @@
-const fetch = require('node-fetch');
+const got = require('got')
 let cheerio = require('cheerio');
 let process = require('process');
 let exec = require('child_process').exec;
-let Buffer = require('buffer').Buffer;
 let hvauto = {};
 
 hvauto.root = "https://hentaiverse.org/";
@@ -13,10 +12,10 @@ hvauto.request = async function (url, opt) {
 	let res;
 	for (;;) {
 		try {
-			res = await fetch(url, opt);
+			res = await got(url, { ...opt, 'timeout': 10000 });
 			break;
 		} catch (e) {
-			console.log('Request ' + url + ' failed, error: ' + e + '. Retrying...');
+			console.log('Request failed with: ' + e + '. Retrying...');
 		}
 	}
 	return res;
@@ -37,17 +36,10 @@ hvauto.requestPage = async function (url) {
 			"cookie": hvauto.cookie
 		},
 		"referrerPolicy": "no-referrer-when-downgrade",
-		"body": null,
 		"method": "GET",
 		"mode": "cors"
 	});
-	let ab = await res.arrayBuffer();
-	let buf = Buffer.alloc(ab.byteLength);
-	let view = new Uint8Array(ab);
-	for (let i = 0; i < buf.length; ++i) {
-		buf[i] = view[i];
-	}
-	return buf.toString('utf-8');
+	return res.body;
 };
 
 hvauto.requestJson = async function (body) {
@@ -68,8 +60,7 @@ hvauto.requestJson = async function (body) {
 		"method": "POST",
 		"mode": "cors"
 	});
-	let obj = res.json();
-	return obj;
+	return JSON.parse(res.body);
 };
 
 hvauto.parseEffectScript = function (script) {

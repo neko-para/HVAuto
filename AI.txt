@@ -1,0 +1,41 @@
+HAS 'Mana Gem'
+	mana < 300
+		USE ITEMP
+
+HAS 'Health Gem'
+	health < 4500
+		USE ITEMP
+
+HAS 'Spirit Gem'
+	spirit < 300
+		USE ITEMP
+
+HAS 'Mystic Gem'
+	NOEFF 'Channeling'
+		USE ITEMP
+
+health < 4000
+	NOEFF 'Regen'
+		CAST 'Regen'
+
+health < 2000
+	CAST 'Cure'
+
+mana < 150
+	NOEFF 'Replenishment'
+		USE 'Mana Draught'
+
+NOTSPIRIT
+	spirit >= 200
+		charge >= 9
+			TRIGSPIRIT
+
+SPIRIT
+	spirit < 170
+		TRIGSPIRIT
+
+EFF 'Channeling'
+	NOEFF 'Protection'
+		CAST 'Protection'
+
+ATTACK

@@ -72,7 +72,7 @@ let dict = [
 			'parry': '招架',
 			'parries': '招架',
 			'health': '生命',
-			'magic': '魔力',
+			'magic': '法力',
 			'spirit': '灵力',
 			'one-handed weapon': '单手武器',
 			'two-handed weapon': '双手武器',
@@ -185,8 +185,8 @@ let rules = [
 		'pat': '你恢复了@($1)点生命。'
 	},
 	{
-		'reg': /^Recovered (\d+) points of spirit\.$/,
-		'pat': '你恢复了@($1)点灵力。'
+		'reg': /^Recovered (\d+) points of (magic|spirit)\.$/,
+		'pat': '你恢复了@($1)点@<$2>。'
 	},
 	{
 		'reg': /^([^,.]+) dropped <span style="color:#A89000">\[(\d+) Credits\]<\/span>$/,
@@ -201,12 +201,20 @@ let rules = [
 		'pat': '@<$1>掉落了@<$2>。'
 	},
 	{
+		'reg': /^Arena Clear Bonus! <span style="color:#[A-F0-9]{6}">\[([^,.]+)\]<\/span>/,
+		'pat': '竞技场奖励！@<$1>。'
+	},
+	{
 		'reg': /^([^,.]+) drops a ([^,.]+) powerup!$/,
 		'pat': '@<$1>掉落了@<$2>。'
 	},
 	{
 		'reg': /^You gain (\d+) EXP!$/,
 		'pat': '你获得了@($1)点经验！'
+	},
+	{
+		'reg': /^You gain (\d+) Credits!$/,
+		'pat': '你获得了@($1)C！'
 	},
 	{
 		'reg': /^You gain ([.0-9]+) points of ([^,.]+) proficiency.$/,

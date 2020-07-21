@@ -156,6 +156,7 @@ hvauto.init = async function (cookie) {
 		hvauto.battle.monster = [];
 		$('#pane_monster').children('.btm1').each(function (i, e) {
 			let obj = {};
+			let style = $(this).attr('style');
 			obj.level = $(this).children('.btm2').children('div').children('div').filter('.fac').children('div').text();
 			obj.name = $(this).children('.btm3').children('div').filter('.fal').children('div').text();
 			$(this).children('.btm4').children('.btm5').children('.chbd').children('img').each(function (i, e) {
@@ -163,11 +164,11 @@ hvauto.init = async function (cookie) {
 					obj[$(this).attr('alt')] = /width:(\d+)px/.exec($(this).attr('style'))[1];
 				}
 			});
-			obj.isboss = $(this).attr('style') != undefined;
 			obj.effect = [];
 			$(this).children('.btm6').children('img').each(function (i, e) {
 				obj.effect.push(hvauto.parseEffectScript($(this).attr('onmouseover')));
 			});
+			obj.isboss = /border/.exec(style) != null;
 			obj.alive = obj.health != undefined;
 			hvauto.battle.monster.push(obj);
 		});

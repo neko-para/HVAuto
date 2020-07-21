@@ -72,16 +72,16 @@ let dict = [
 
 let rules = [
 	{
+		'reg': /^Your ([^,.]+) hits ([^,.]+) for (\d+) points of ([^,.]+) damage\.$/,
+		'pat': '你的@<$1>对@<$2>造成了@($3)点@<$4>伤害。'
+	},
+	{
 		'reg': /^([^,.]+) hits? ([^,.]+) for (\d+) ([^,.]+) damage\.$/,
 		'pat': '@<$1>对@<$2>造成了@($3)点@<$4>伤害。'
 	},
 	{
 		'reg': /^([^,.]+) crits? ([^,.]+) for (\d+) ([^,.]+) damage\.$/,
 		'pat': '@<$1>对@<$2>暴击，造成了@($3)点@<$4>伤害。'
-	},
-	{
-		'reg': /^Your ([^,.]+) hits ([^,.]+) for (\d+) points of ([^,.]+) damage\.$/,
-		'pat': '你的@<$1>对@<$2>造成了@($3)点@<$4>伤害。'
 	},
 	{
 		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+), and hits? ([^,.]+) for (\d+) ([^,.]+) damage$/,
@@ -98,6 +98,10 @@ let rules = [
 	{
 		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+), and crits? ([^,.]+) for (\d+) ([^,.]+) damage \((\d+)% resisted\)$/,
 		'pat': '@<$1>使用了@<$2>，对@<$3>暴击，造成了@($4)点@<$5>伤害（抵抗$6%）。'
+	},
+	{
+		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+), but miss(?:es)? the attack\.$/,
+		'pat': '@<$1>使用了@<$2>，但被闪避了。'
 	},
 	{
 		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+)\. You (parry|block) the attack\.$/,
@@ -148,8 +152,20 @@ let rules = [
 		'pat': '@<$1>使你恢复了@($2)点@<$3>。'
 	},
 	{
+		'reg': /^You are healed for (\d+) Health Points\.$/,
+		'pat': '你通过治疗恢复了@($1)点生命。'
+	},
+	{
+		'reg': /^([^,.]+) dropped <span style="color:#A89000">\[(\d+) Credits\]<\/span>$/,
+		'pat': '@<$1>掉落了@($2)C。'
+	},
+	{
+		'reg': /^([^,.]+) dropped <span style="color:#BA05B4">\[([^,.]+)\]<\/span>$/,
+		'pat': '@<$1>掉落了@<$2>。'
+	},
+	{
 		'reg': /^([^,.]+) dropped <span style="color:#[A-F0-9]{6}">\[([^,.]+)\]<\/span>$/,
-		'pat': '@<$1>掉落了$2。'
+		'pat': '@<$1>掉落了@<$2>。'
 	},
 	{
 		'reg': /^You gain (\d+) EXP!$/,
@@ -186,9 +202,13 @@ const numberReg = /@\(([.\d]+)\)/;
 
 module.exports = function (str) {
 	let newstr = null;
-	rules.forEach(r => {
+	for (let i in rules) {
+		let r = rules[i];
 		let mat = r.reg.exec(str);
 		if (mat) {
+			if (r.show) {
+				console.log('\t' + str);
+			}
 			newstr = str.replace(r.reg, r.pat);
 			mat = numberReg.exec(newstr);
 			while (mat) {
@@ -199,17 +219,18 @@ module.exports = function (str) {
 			while (mat) {
 				let key = mat[1];
 				let val = '\x1b[33m' + key + '\x1b[37m';
-				dict.forEach(d => {
+				for (let j in dict) {
+					let d = dict[j];
 					if (d.keys[key]) {
 						val = d.color ? d.color + d.keys[key] + '\x1b[37m' : d.keys[key];
-						return false;
+						break;
 					}
-				})
+				}
 				newstr = newstr.replace(updateReg, val);
 				mat = updateReg.exec(newstr);
 			}
-			return false;
+			break;
 		}
-	});
+	}
 	return newstr || '\x1b[31m' + str + '\x1b[37m';
 };

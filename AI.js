@@ -1,6 +1,14 @@
 module.exports = function (hvauto) {
 	let battle = hvauto.battle;
+	let progress = 0;
 	console.log('Health: ' + battle.health + ', Mana: ' + battle.mana + ', Spirit: ' + battle.spirit + ', Charge: ' + battle.charge);
+	battle.monster.forEach(t => {
+		if (t.alive) {
+			progress += t.health;
+		}
+	});
+	progress /= battle.monster.length;
+	console.log('Progress: ' + Math.floor((1 - progress) * 100) + '%')
 	if (battle.item[999]) {
 		if (battle.item[999].name == 'Mana Gem' && battle.mana < 300) {
 			console.log('Use mana gem');

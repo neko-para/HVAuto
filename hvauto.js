@@ -151,7 +151,7 @@ hvauto.init = async function (cookie) {
 			obj.name = $(this).children('.btm3').children('div').filter('.fal').children('div').text();
 			$(this).children('.btm4').children('.btm5').children('.chbd').children('img').each(function () {
 				if ($(this).attr('alt') != null) {
-					obj[$(this).attr('alt')] = /width:(\d+)px/.exec($(this).attr('style'))[1];
+					obj[$(this).attr('alt')] = /width:(\d+)px/.exec($(this).attr('style'))[1] / 120.0;
 				}
 			});
 			obj.effect = [];
@@ -470,7 +470,7 @@ hvauto.doAction = async function (obj) {
 		obj.name = $(this).children('.btm3').children('div').filter('.fal').children('div').text();
 		$(this).children('.btm4').children('.btm5').children('.chbd').children('img').each(function () {
 			if ($(this).attr('alt') != null) {
-				obj[$(this).attr('alt')] = /width:(\d+)px/.exec($(this).attr('style'))[1];
+				obj[$(this).attr('alt')] = /width:(\d+)px/.exec($(this).attr('style'))[1] / 120.0;
 			}
 		});
 		obj.effect = [];

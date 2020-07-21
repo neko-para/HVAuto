@@ -1,80 +1,89 @@
-let dicts = {
-	'fire': '火焰',
-	'cold': '冰冷',
-	'elec': '闪电',
-	'wind': '疾风',
-	'holy': '神圣',
-	'dark': '黑暗',
-	'crushing': '锤击',
-	'slashing': '斩击',
-	'piercing': '刺击',
-	'void': '虚空',
-	'you': '你',
-	'You': '你',
-	'block': '格挡',
-	'blocks': '格挡',
-	'parry': '招架',
-	'parries': '招架',
-
-	'health': '生命',
-	'magic': '魔力',
-	'spirit': '灵力',
-
-	'Overwhelming Strikes': '压倒性的攻击',
-	'Stunned': '眩晕',
-	'Penetrated Armor': '破甲',
-	'Searing Skin': '烧灼的皮肤',
-
-	'one-handed weapon': '单手武器',
-	'two-handed weapon': '双手武器',
-	'dual wielding': '双持武器', // need check
-	'cloth armor': '布甲',
-	'light armor': '轻甲',
-	'heavy armor': '重甲',
-	'staff': '法杖', // need check
-	'elemental magic': '元素魔法',
-	'divine magic': '神圣魔法',
-	'forbidden magic': '黑暗魔法',
-	'deprecating magic': '减益魔法',
-	'supportive magic': '增益魔法',
-
-	'spike shield': '刺盾',
-
-	'Channeling': '引导',
-	'Cure': '治疗术',
-	'Regen': '恢复术',
-	'Protection': '护盾',
-	'Replenishment': '补给'
-};
+let dict = [
+	{
+		'keys': {
+			'fire': '火焰',
+			'cold': '冰冷',
+			'elec': '闪电',
+			'wind': '疾风',
+			'holy': '神圣',
+			'dark': '黑暗',
+			'crushing': '锤击',
+			'slashing': '斩击',
+			'piercing': '刺击',
+			'void': '虚空'
+		},
+		'color': '\x1b[34m'
+	},
+	{
+		'keys': {
+			'Overwhelming Strikes': '压倒性的攻击',
+			'Stunned': '眩晕',
+			'Penetrated Armor': '破甲',
+			'Searing Skin': '烧灼的皮肤',
+			'Channeling': '引导',
+			'Cure': '治疗术',
+			'Regen': '恢复术',
+			'Protection': '护盾',
+			'Replenishment': '补给'
+		},
+		'color': '\x1b[35m'
+	},
+	{
+		'keys': {
+			'you': '你',
+			'You': '你',
+			'block': '格挡',
+			'blocks': '格挡',
+			'parry': '招架',
+			'parries': '招架',
+			'health': '生命',
+			'magic': '魔力',
+			'spirit': '灵力',
+			'one-handed weapon': '单手武器',
+			'two-handed weapon': '双手武器',
+			'dual wielding': '双持武器',
+			'cloth armor': '布甲',
+			'light armor': '轻甲',
+			'heavy armor': '重甲',
+			'staff': '法杖',
+			'elemental magic': '元素魔法',
+			'divine magic': '神圣魔法',
+			'forbidden magic': '黑暗魔法',
+			'deprecating magic': '减益魔法',
+			'supportive magic': '增益魔法',
+			'spike shield': '刺盾',
+		}
+	}
+];
 
 let rules = [
 	{
 		'reg': /^([^,.]+) hits? ([^,.]+) for (\d+) ([^,.]+) damage\.$/,
-		'pat': '@<$1>对@<$2>造成了$3点@<$4>伤害。'
+		'pat': '@<$1>对@<$2>造成了@($3)点@<$4>伤害。'
 	},
 	{
 		'reg': /^([^,.]+) crits? ([^,.]+) for (\d+) ([^,.]+) damage\.$/,
-		'pat': '@<$1>对@<$2>暴击，造成了$3点@<$4>伤害。'
+		'pat': '@<$1>对@<$2>暴击，造成了@($3)点@<$4>伤害。'
 	},
 	{
 		'reg': /^Your ([^,.]+) hits ([^,.]+) for (\d+) points of ([^,.]+) damage\.$/,
-		'pat': '你的@<$1>对@<$2>造成了$3点@<$4>伤害。'
+		'pat': '你的@<$1>对@<$2>造成了@($3)点@<$4>伤害。'
 	},
 	{
 		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+), and hits? ([^,.]+) for (\d+) ([^,.]+) damage$/,
-		'pat': '@<$1>使用了@<$2>，对@<$3>造成了$4点@<$5>伤害。'
+		'pat': '@<$1>使用了@<$2>，对@<$3>造成了@($4)点@<$5>伤害。'
 	},
 	{
 		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+), and hits? ([^,.]+) for (\d+) ([^,.]+) damage \((\d+)% resisted\)$/,
-		'pat': '@<$1>使用了@<$2>，对@<$3>造成了$4点@<$5>伤害（抵抗$6%）。'
+		'pat': '@<$1>使用了@<$2>，对@<$3>造成了@($4)点@<$5>伤害（抵抗$6%）。'
 	},
 	{
 		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+), and crits? ([^,.]+) for (\d+) ([^,.]+) damage$/,
-		'pat': '@<$1>使用了@<$2>，对@<$3>暴击，造成了$4点@<$5>伤害。'
+		'pat': '@<$1>使用了@<$2>，对@<$3>暴击，造成了@($4)点@<$5>伤害。'
 	},
 	{
 		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+), and crits? ([^,.]+) for (\d+) ([^,.]+) damage \((\d+)% resisted\)$/,
-		'pat': '@<$1>使用了@<$2>，对@<$3>暴击，造成了$4点@<$5>伤害（抵抗$6%）。'
+		'pat': '@<$1>使用了@<$2>，对@<$3>暴击，造成了@($4)点@<$5>伤害（抵抗$6%）。'
 	},
 	{
 		'reg': /^([^,.]+) (?:cast|use)s? ([^,.]+)\. You (parry|block) the attack\.$/,
@@ -102,7 +111,7 @@ let rules = [
 	},
 	{
 		'reg': /^You counter ([^,.]+) for (\d+) points of ([^,.]+) damage\.$/,
-		'pat': '你反击@<$1>造成了$2点@<$3>伤害。'
+		'pat': '你反击@<$1>造成了@($2)点@<$3>伤害。'
 	},
 	{
 		'reg': /^([^,.]+) has been defeated\.$/,
@@ -110,19 +119,19 @@ let rules = [
 	},
 	{
 		'reg': /^([^,.]+) gains? the effect ([^,.]+)\.$/,
-		'pat': '@<$1>获得了效果@<$2>。'
+		'pat': '@<$1>获得了@<$2>。'
 	},
 	{
 		'reg': /^The effect ([^,.]+) {2}has expired\.$/,
-		'pat': '你的效果@<$1>过期了。'
+		'pat': '你的@<$1>过期了。'
 	},
 	{
 		'reg': /^The effect ([^,.]+) on ([^,.]+) has expired\.$/,
-		'pat': '@<$2>的效果@<$1>过期了。'
+		'pat': '@<$2>的@<$1>过期了。'
 	},
 	{
 		'reg': /^([^,.]+) restores (\d+) points of ([^,.]+)\.$/,
-		'pat': '效果@<$1>使你恢复了$2点@<$3>。'
+		'pat': '@<$1>使你恢复了@($2)点@<$3>。'
 	},
 	{
 		'reg': /^([^,.]+) dropped <span style="color:#[A-F0-9]{6}">\[([^,.]+)\]<\/span>$/,
@@ -130,11 +139,11 @@ let rules = [
 	},
 	{
 		'reg': /^You gain (\d+) EXP!$/,
-		'pat': '你获得了$1点经验！'
+		'pat': '你获得了@($1)点经验！'
 	},
 	{
 		'reg': /^You gain ([.0-9]+) points of ([^,.]+) proficiency.$/,
-		'pat': '你获得了$1点@<$2>熟练度。'
+		'pat': '你获得了@($1)点@<$2>熟练度。'
 	},
 	{
 		'reg': /^You are Victorious!$/,
@@ -145,12 +154,21 @@ let rules = [
 		'pat': '生成怪物$1：编号$2\t级别$4\t血量$5\t名称$3'
 	},
 	{
-		'reg': /^Stop (?:beat|kick)ing dead (?:ponies|horse)\.$/,
+		'reg': /^Stop (?:beat|kick)ing (?:the)? dead (?:ponies|horse)\.$/,
 		'pat': '不要再鞭尸了。（这个可能是因为网络原因导致的）'
+	},
+	{
+		'reg': /^Spirit Stance Engaged$/,
+		'pat': '启用灵动架势。'
+	},
+	{
+		'reg': /^Spirit Stance Disabled$/,
+		'pat': '禁用灵动架势。'
 	}
 ];
 
 const updateReg = /@<(.+?)>/;
+const numberReg = /@\(([.\d]+)\)/;
 
 module.exports = function (str) {
 	let newstr = null;
@@ -158,10 +176,21 @@ module.exports = function (str) {
 		let mat = r.reg.exec(str);
 		if (mat) {
 			newstr = str.replace(r.reg, r.pat);
+			mat = numberReg.exec(newstr);
+			while (mat) {
+				newstr = newstr.replace(numberReg, '\x1b[32m$1\x1b[37m');
+				mat = numberReg.exec(newstr);
+			}
 			mat = updateReg.exec(newstr);
 			while (mat) {
 				let key = mat[1];
-				let val = dicts[key] ? dicts[key] : '\x1b[33m' + key + '\x1b[37m';
+				let val = '\x1b[33m' + key + '\x1b[37m';
+				dict.forEach(d => {
+					if (d.keys[key]) {
+						val = d.color ? d.color + d.keys[key] + '\x1b[37m' : d.keys[key];
+						return false;
+					}
+				})
 				newstr = newstr.replace(updateReg, val);
 				mat = updateReg.exec(newstr);
 			}

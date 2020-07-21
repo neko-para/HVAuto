@@ -93,7 +93,7 @@ hvauto.init = async function (cookie) {
 	if ($('#mainpane').children('#battle_top').length > 0) {
 		hvauto.battle.token = /var battle_token = "([a-z0-9]+)";/.exec($('#mainpane').children('script').eq(1).html())[1];
 		hvauto.battle.charge = 0;
-		$('#vcp').children('div').children().each(function (i, e) {
+		$('#vcp').children('div').children().each(function () {
 			if ($(this).attr('id') == 'vcr') {
 				hvauto.battle.charge += 0.5;
 			} else {
@@ -109,20 +109,20 @@ hvauto.init = async function (cookie) {
 		hvauto.battle.spirit = $('#vrs').text();
 		hvauto.battle.spirit_stance = $('#ckey_spirit').attr('src') == '/y/battle/spirit_a.png';
 		hvauto.battle.skills = {}; // both skills and magic are in it
-		$('#table_skills .bts').children('div').each(function (i, e) {
+		$('#table_skills .bts').children('div').each(function () {
 			let obj = hvauto.parseSpellScript($(this).attr('onmouseover'));
 			obj.id = Number($(this).attr('id'));
 			obj.available = $(this).attr('style') != 'opacity:0.5';
 			hvauto.battle.skills[obj.name] = obj;
 		});
-		$('#table_magic .bts').children('div').each(function (i, e) {
+		$('#table_magic .bts').children('div').each(function () {
 			let obj = hvauto.parseSpellScript($(this).attr('onmouseover'));
 			obj.id = Number($(this).attr('id'));
 			obj.available = $(this).attr('style') != 'opacity:0.5';
 			hvauto.battle.skills[obj.name] = obj;
 		});
 		hvauto.battle.effect = [];
-		$('#pane_effects img').each(function (i, e) {
+		$('#pane_effects img').each(function () {
 			hvauto.battle.effect.push(hvauto.parseEffectScript($(this).attr('onmouseover')));
 		});
 		hvauto.battle.item = {};
@@ -134,7 +134,7 @@ hvauto.init = async function (cookie) {
 			obj.available = $('#pane_item').children('.bti1').children('.bti3').children().attr('onclick') != undefined;
 			hvauto.battle.item[999] = obj;
 		}
-		$('#pane_item').children('.c').children().children('.c').children('.bti1').each(function (i, e) {
+		$('#pane_item').children('.c').children().children('.c').children('.bti1').each(function () {
 			let obj = {};
 			obj.id = Number($(this).children('.bti2').children().children().text());
 			if ($(this).children('.bti3').children().length == 0) {
@@ -145,17 +145,17 @@ hvauto.init = async function (cookie) {
 			hvauto.battle.item[obj.id] = obj;
 		});
 		hvauto.battle.monster = [];
-		$('#pane_monster').children('.btm1').each(function (i, e) {
+		$('#pane_monster').children('.btm1').each(function () {
 			let obj = {};
 			obj.level = $(this).children('.btm2').children('div').children('div').filter('.fac').children('div').text();
 			obj.name = $(this).children('.btm3').children('div').filter('.fal').children('div').text();
-			$(this).children('.btm4').children('.btm5').children('.chbd').children('img').each(function (i, e) {
+			$(this).children('.btm4').children('.btm5').children('.chbd').children('img').each(function () {
 				if ($(this).attr('alt') != null) {
 					obj[$(this).attr('alt')] = /width:(\d+)px/.exec($(this).attr('style'))[1];
 				}
 			});
 			obj.effect = [];
-			$(this).children('.btm6').children('img').each(function (i, e) {
+			$(this).children('.btm6').children('img').each(function () {
 				obj.effect.push(hvauto.parseEffectScript($(this).attr('onmouseover')));
 			});
 			obj.isboss = $(this).children('.btm2').attr('style') != null;
@@ -163,7 +163,7 @@ hvauto.init = async function (cookie) {
 			hvauto.battle.monster.push(obj);
 		});
 		hvauto.battle.log = [];
-		$('#textlog td').each(function (i, e) {
+		$('#textlog td').each(function () {
 			let text = $(this).text();
 			hvauto.battle.log.push(text);
 			let mat = /^Initializing .+\(Round ([0-9]+) \/ ([0-9]+)\) ...$/.exec(text); // seems not work yet
@@ -399,11 +399,19 @@ hvauto.doAction = async function (obj) {
 
 	$ = cheerio.load(res['pane_effects']);
 	hvauto.battle.effect = [];
-	$('img').each(function (i, e) {
+	$('img').each(function () {
 		hvauto.battle.effect.push(hvauto.parseEffectScript($(this).attr('onmouseover')));
 	});
 
 	$ = cheerio.load(res['pane_vitals']);
+	hvauto.battle.charge = 0;
+	$('#vcp').children('div').children().each(function () {
+		if ($(this).attr('id') == 'vcr') {
+			hvauto.battle.charge += 0.5;
+		} else {
+			hvauto.battle.charge += 1;
+		}
+	});
 	if ($('#vrhb').length > 0) {
 		hvauto.battle.health = $('#vrhb').text();
 	} else {
@@ -414,7 +422,7 @@ hvauto.doAction = async function (obj) {
 
 	hvauto.battle.skills = {}; // both skills and magic are in i
 	$ = cheerio.load('<table>' + res['table_skills'] + '</table>');
-	$('.bts').children('div').each(function (i, e) {
+	$('.bts').children('div').each(function () {
 		let obj = hvauto.parseSpellScript($(this).attr('onmouseover'));
 		obj.id = Number($(this).attr('id'));
 		obj.available = $(this).attr('style') != 'opacity:0.5';
@@ -422,7 +430,7 @@ hvauto.doAction = async function (obj) {
 	});
 	
 	$ = cheerio.load('<table>' + res['table_magic'] + '</table>');
-	$('.bts').children('div').each(function (i, e) {
+	$('.bts').children('div').each(function () {
 		let obj = hvauto.parseSpellScript($(this).attr('onmouseover'));
 		obj.id = Number($(this).attr('id'));
 		obj.available = $(this).attr('style') != 'opacity:0.5';
@@ -442,7 +450,7 @@ hvauto.doAction = async function (obj) {
 			obj.available = $('#root').children('.bti1').children('.bti3').children().attr('onclick') != undefined;
 			hvauto.battle.item[999] = obj;
 		}
-		$('#root').children('.c').children().children('.c').children('.bti1').each(function (i, e) {
+		$('#root').children('.c').children().children('.c').children('.bti1').each(function () {
 			let obj = {};
 			obj.id = Number($(this).children('.bti2').children().children().text());
 			if ($(this).children('.bti3').children().length == 0) {
@@ -456,17 +464,17 @@ hvauto.doAction = async function (obj) {
 
 	$ = cheerio.load(res['pane_monster']);
 	hvauto.battle.monster = [];
-	$('.btm1').each(function (i, e) {
+	$('.btm1').each(function () {
 		let obj = {};
 		obj.level = $(this).children('.btm2').children('div').children('div').filter('.fac').children('div').text();
 		obj.name = $(this).children('.btm3').children('div').filter('.fal').children('div').text();
-		$(this).children('.btm4').children('.btm5').children('.chbd').children('img').each(function (i, e) {
+		$(this).children('.btm4').children('.btm5').children('.chbd').children('img').each(function () {
 			if ($(this).attr('alt') != null) {
 				obj[$(this).attr('alt')] = /width:(\d+)px/.exec($(this).attr('style'))[1];
 			}
 		});
 		obj.effect = [];
-		$(this).children('.btm6').children('img').each(function (i, e) {
+		$(this).children('.btm6').children('img').each(function () {
 			obj.effect.push(hvauto.parseEffectScript($(this).attr('onmouseover')));
 		});
 		obj.alive = obj.health != undefined;

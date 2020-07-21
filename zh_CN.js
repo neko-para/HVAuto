@@ -24,7 +24,8 @@ let dict = [
 			'Cure': '治疗术',
 			'Regen': '恢复术',
 			'Protection': '护盾',
-			'Replenishment': '补给'
+			'Replenishment': '补给',
+			'Spark of Life': '生命火花'
 		},
 		'color': '\x1b[35m'
 	},
@@ -36,9 +37,27 @@ let dict = [
 			'Health Potion': '体力药水',
 			'Mana Potion': '法力药水',
 			'Spirit Potion': '灵力药水',
+			'Health Elixir': '终极体力药',
+			'Mana Elixir': '终极法力药',
+			'Spirit Elixir': '终极灵力药',
 			'Health Gem': '体力宝石',
 			'Mana Gem': '法力宝石',
-			'Spirit Gem': '灵力宝石'
+			'Spirit Gem': '灵力宝石',
+			'Crystal of Vigor': '力量水晶',
+			'Crystal of Finesse': '灵巧水晶',
+			'Crystal of Swiftness': '敏捷水晶',
+			'Crystal of Fortitude': '体质水晶',
+			'Crystal of Cunning': '智力水晶',
+			'Crystal of Knowledge': '智慧水晶',
+			'Crystal of Flames': '火焰水晶',
+			'Crystal of Frost': '冰冻水晶',
+			'Crystal of Lightning': '闪电水晶',
+			'Crystal of Tempest': '疾风水晶',
+			'Crystal of Devotion': '神圣水晶',
+			'Crystal of Corruption': '暗黑水晶',
+			'Monster Chow': '怪物饲料',
+			'Monster Edibles': '怪物食品',
+			'Monster Clusine': '怪物料理'
 		},
 		'color': '\x1b[36m'
 	},
@@ -138,6 +157,10 @@ let rules = [
 	{
 		'reg': /^([^,.]+) gains? the effect ([^,.]+)\.$/,
 		'pat': '@<$1>获得了@<$2>。'
+	},
+	{
+		'reg': /^Cooldown expired for ([^,.]+)\.$/,
+		'pat': '@<$1>冷却完毕。'
 	},
 	{
 		'reg': /^The effect ([^,.]+) {2}has expired\.$/,

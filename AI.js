@@ -19,6 +19,9 @@ module.exports = function (hvauto) {
 		} else if (battle.item[999].name == 'Spirit Gem' && battle.spirit < 300) {
 			console.log('Use spirit gem');
 			return hvauto.useItem(0, '999');
+		} else if (battle.item[999].name == 'Mystic Gem' && hvauto.findEffect('Channeling') == null) {
+			console.log('Use mystic gem');
+			return hvauto.useItem(0, '999');
 		}
 	}
 	if (battle.health < 4000) {
@@ -37,7 +40,7 @@ module.exports = function (hvauto) {
 			}
 		}
 	}
-	if (battle.mana < 100 && hvauto.findEffect('Replenishment') == null) {
+	if (battle.mana < 150 && hvauto.findEffect('Replenishment') == null) {
 		let pos = hvauto.findItem('Mana Draught');
 		if (pos == -1) {
 			console.log('You don\'t take mana draught.');

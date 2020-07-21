@@ -43,6 +43,7 @@ let dict = [
 			'Health Gem': '体力宝石',
 			'Mana Gem': '法力宝石',
 			'Spirit Gem': '灵力宝石',
+			'Mystic Gem': '神秘宝石',
 			'Crystal of Vigor': '力量水晶',
 			'Crystal of Finesse': '灵巧水晶',
 			'Crystal of Swiftness': '敏捷水晶',
@@ -57,7 +58,8 @@ let dict = [
 			'Crystal of Corruption': '暗黑水晶',
 			'Monster Chow': '怪物饲料',
 			'Monster Edibles': '怪物食品',
-			'Monster Clusine': '怪物料理'
+			'Monster Clusine': '怪物料理',
+			'Token of Blood': '鲜血令牌'
 		},
 		'color': '\x1b[36m'
 	},
@@ -159,7 +161,7 @@ let rules = [
 		'pat': '@<$1>获得了@<$2>。'
 	},
 	{
-		'reg': /^Cooldown expired for ([^,.]+)\.$/,
+		'reg': /^Cooldown expired for ([^,.]+)$/,
 		'pat': '@<$1>冷却完毕。'
 	},
 	{

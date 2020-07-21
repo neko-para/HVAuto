@@ -2,10 +2,11 @@ let cookie = require('./cookie');
 // cookie.js should be like below
 // module.exports = "__cfduid=xxx;ipb_member_id=xxx;ipb_pass_hash=xxx";
 let hvauto = require('./hvauto');
+let zh_CN = require('./zh_CN');
 
 async function main() {
 	hvauto.handleLog = t => {
-		console.log('\t' + t);
+		console.log('\t' + zh_CN(t));
 	};
 	while (await hvauto.init(cookie)) { // Auto load next battle
 		let battle = hvauto.battle;

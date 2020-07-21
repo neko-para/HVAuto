@@ -143,8 +143,8 @@ let rules = [
 		'pat': '生成怪物$1：编号$2\t级别$4\t血量$5\t名称$3'
 	},
 	{
-		'reg': /^Stop beating dead ponies\.$/,
-		'pat': '不要再攻击死亡的小马们。（这个可能是因为网络原因导致的）'
+		'reg': /^Stop (?:beat|kick)ing dead (?:ponies|horse)\.$/,
+		'pat': '不要再鞭尸了。（这个可能是因为网络原因导致的）'
 	}
 ];
 

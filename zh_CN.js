@@ -86,7 +86,7 @@ let dict = [
 			'forbidden magic': '黑暗魔法',
 			'deprecating magic': '减益魔法',
 			'supportive magic': '增益魔法',
-			'spike shield': '刺盾',
+			'spike shield': '刺盾'
 		}
 	}
 ];
@@ -161,6 +161,10 @@ let rules = [
 		'pat': '@<$1>获得了@<$2>。'
 	},
 	{
+		'reg': /^Cooldown is still pending for ([^,.]+)\.$/,
+		'pat': '@<$1>仍在冷却。'
+	},
+	{
 		'reg': /^Cooldown expired for ([^,.]+)$/,
 		'pat': '@<$1>冷却完毕。'
 	},
@@ -178,7 +182,11 @@ let rules = [
 	},
 	{
 		'reg': /^You are healed for (\d+) Health Points\.$/,
-		'pat': '你通过治疗恢复了@($1)点生命。'
+		'pat': '你恢复了@($1)点生命。'
+	},
+	{
+		'reg': /^Recovered (\d+) points of spirit\.$/,
+		'pat': '你恢复了@($1)点灵力。'
 	},
 	{
 		'reg': /^([^,.]+) dropped <span style="color:#A89000">\[(\d+) Credits\]<\/span>$/,
@@ -190,6 +198,10 @@ let rules = [
 	},
 	{
 		'reg': /^([^,.]+) dropped <span style="color:#[A-F0-9]{6}">\[([^,.]+)\]<\/span>$/,
+		'pat': '@<$1>掉落了@<$2>。'
+	},
+	{
+		'reg': /^([^,.]+) drops a ([^,.]+) powerup!$/,
 		'pat': '@<$1>掉落了@<$2>。'
 	},
 	{
@@ -219,6 +231,14 @@ let rules = [
 	{
 		'reg': /^Spirit Stance Disabled$/,
 		'pat': '禁用灵动架势。'
+	},
+	{
+		'reg': /^Initializing Grindfest \(Round (\d+) \/ (\d+)\) \.\.\.$/,
+		'pat': '初始化压榨界，回合@($2)/@($3)。'
+	},
+	{
+		'reg': /^Initializing arena challenge #(\d+) \(Round (\d+) \/ (\d+)\) \.\.\.$/,
+		'pat': '初始化竞技场第@($1)关，回合@($2)/@($3)。'
 	}
 ];
 

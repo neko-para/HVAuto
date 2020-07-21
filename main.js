@@ -1,9 +1,9 @@
-let cookie = require('./cookie');
-// cookie.js should be like below
-// module.exports = "__cfduid=xxx;ipb_member_id=xxx;ipb_pass_hash=xxx";
+const fs = require('fs');
+const process = require('process');
 let hvauto = require('./hvauto');
-let zh_CN = require('./zh_CN');
-let AI = require('./AI');
+let zh_CN = require(process.cwd() + '/zh_CN');
+let AI = require(process.cwd() + '/AI');
+const cookie = fs.readFileSync('cookie.txt');
 
 async function main() {
 	hvauto.handleLog = t => {

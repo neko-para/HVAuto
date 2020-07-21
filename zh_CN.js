@@ -30,6 +30,20 @@ let dict = [
 	},
 	{
 		'keys': {
+			'Health Draught': '体力长效药',
+			'Mana Draught': '法力长效药',
+			'Spirit Draught': '灵力长效药',
+			'Health Potion': '体力药水',
+			'Mana Potion': '法力药水',
+			'Spirit Potion': '灵力药水',
+			'Health Gem': '体力宝石',
+			'Mana Gem': '法力宝石',
+			'Spirit Gem': '灵力宝石'
+		},
+		'color': '\x1b[36m'
+	},
+	{
+		'keys': {
 			'you': '你',
 			'You': '你',
 			'block': '格挡',
@@ -154,7 +168,7 @@ let rules = [
 		'pat': '生成怪物$1：编号$2\t级别$4\t血量$5\t名称$3'
 	},
 	{
-		'reg': /^Stop (?:beat|kick)ing (?:the)? dead (?:ponies|horse)\.$/,
+		'reg': /^Stop (?:beat|kick)ing (?:the )?dead (?:ponies|horse)\.$/,
 		'pat': '不要再鞭尸了。（这个可能是因为网络原因导致的）'
 	},
 	{
@@ -197,5 +211,5 @@ module.exports = function (str) {
 			return false;
 		}
 	});
-	return newstr || '\x1b[36m' + str + '\x1b[37m';
+	return newstr || '\x1b[31m' + str + '\x1b[37m';
 };

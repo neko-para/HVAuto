@@ -4,7 +4,19 @@
   "description": "HentaiVerse Auto Tool",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pkg": "node .\\node_modules\\pkg\\lib-es5\\bin.js . --out-path=dist\\"
+  },
+  "bin": "./main.js",
+  "pkg": {
+    "scripts": [
+      "main.js",
+      "hvauto.js",
+      "cookie.js",
+      "zh_CN.js"
+    ],
+    "targets": [
+      "node12-win-x64"
+    ]
   },
   "keywords": [
     "hentaiverse"
@@ -17,6 +29,7 @@
     "zlib": "^1.0.5"
   },
   "devDependencies": {
-    "eslint": "^7.5.0"
+    "eslint": "^7.5.0",
+    "pkg": "^4.4.9"
   }
 }

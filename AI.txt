@@ -12,35 +12,55 @@ HAS 'Spirit Gem'
 
 HAS 'Mystic Gem'
 	NOEFF 'Channeling'
-		NOEFF 'Protection'
-			NOEFF 'Regen'
-			health < 4000
-			AND
-		OR
-			USE ITEMP
+		USE ITEMP
 
-health < 4000
+health < 5000
 	NOEFF 'Regen'
 		CAST 'Regen'
 
+health < 4000
+	NOEFF 'Protection'
+		CAST 'Protection'
+
 health < 2000
 	CAST 'Cure'
+
+health < 1000
+	USE 'Health Draught'
+
+health < 1000
+	USE 'Health Potion'
 
 mana < 150
 	NOEFF 'Replenishment'
 		USE 'Mana Draught'
 
+spirit < 170
+	NOEFF 'Refreshment'
+		USE 'Spirit Draught'
+
 NOTSPIRIT
-	spirit >= 200
+	spirit >= 250
 		charge >= 9
 			TRIGSPIRIT
 
 SPIRIT
-	spirit < 170
+	spirit < 200
 		TRIGSPIRIT
 
-EFF 'Channeling'
-	NOEFF 'Protection'
-		CAST 'Protection'
+charge >= 7
+	M_BOSS
+	SORT health >
+		CASTTO 'Shield Bash'
 
-ATTACK
+charge >= 7
+	M_EFF 'Stunned'
+	DROP
+		M_BOSS
+		SORT health >
+			CASTTO 'Vital Strike'
+
+M_NOEFF 'Stunned'
+	M_BOSS
+		SORT health <
+			ATTACK

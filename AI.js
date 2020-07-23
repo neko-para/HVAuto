@@ -42,17 +42,20 @@ module.exports = {
 		process.stdout.write('\x1b[s');
 		move(1, 1);
 		process.stdout.write('\x1b[30m');
-		process.stdout.write(bar(battle.healthp, expand(battle.health, 20), '\x1b[42m'));
-		process.stdout.write(bar(battle.manap, expand(battle.mana, 20), '\x1b[44m'));
-		process.stdout.write(bar(battle.spiritp, expand(battle.spirit, 20), '\x1b[41m'));
-		process.stdout.write(bar(battle.chargep, expand(battle.charge, 20), '\x1b[43m'));
+		process.stdout.write(bar(battle.healthp, expand(battle.health, 20), '\x1b[42m', '\x1b[47m'));
+		process.stdout.write(bar(battle.manap, expand(battle.mana, 20), '\x1b[44m', '\x1b[47m'));
+		process.stdout.write(bar(battle.spiritp, expand(battle.spirit, 20), '\x1b[41m', '\x1b[47m'));
+		process.stdout.write(bar(battle.chargep, expand(battle.charge, 20), '\x1b[43m', '\x1b[47m'));
 		process.stdout.write('\x1b[37m\x1b[K\n');
-		console.log(buildEff(battle.effect) + '\x1b[K');
-		let act = AIParser(hvauto);
-		let round = '';
-		if (hvauto.battle.round.current) {
-			round = expand(hvauto.battle.round.current + ' / ' + hvauto.battle.round.all, 10);
+		if (battle.spirit_stance) {
+			process.stdout.write('\x1b[31m灵动架势\x1b[37m ');
 		}
+		console.log(buildEff(battle.effect) + '\x1b[K');
+		let round = '';
+		if (battle.round.current) {
+			round = expand(battle.round.current + ' / ' + battle.round.all, 10);
+		}
+		let act = AIParser(hvauto);
 		console.log(round + '操作: ' + act.msg + '\x1b[K');
 		console.log('-'.repeat(80));
 		for (let i = 0; i < hvauto.battle.monster.length; ++i) {

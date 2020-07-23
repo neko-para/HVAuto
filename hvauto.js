@@ -1,6 +1,8 @@
 const got = require('got')
 let cheerio = require('cheerio');
 let process = require('process');
+const { abort } = require('process');
+const fs = require('fs');
 let exec = require('child_process').exec;
 let hvauto = {};
 
@@ -152,6 +154,7 @@ hvauto.init = async function (cookie) {
 		hvauto.battle.monster = [];
 		$('#pane_monster').children('.btm1').each(function () {
 			let obj = {};
+			obj.id = hvauto.battle.monster.length + 1;
 			obj.level = $(this).children('.btm2').children('div').children('div').filter('.fac').children('div').text();
 			obj.name = $(this).children('.btm3').children('div').filter('.fal').children('div').text();
 			$(this).children('.btm4').children('.btm5').children('.chbd').children('img').each(function () {
@@ -378,9 +381,10 @@ hvauto.useItem = function (target, item) { // maybe scrolls will use target.
 	};
 };
 
-hvauto.findEffect = function (name) {
+hvauto.findEffect = function (name, from) {
+	from = from || hvauto.battle.effect;
 	let target = null;
-	hvauto.battle.effect.forEach(t => {
+	from.forEach(t => {
 		if (t.name == name) {
 			target = t;
 			return false;
@@ -399,7 +403,11 @@ hvauto.findItem = function (name) {
 };
 
 hvauto.doAction = async function (obj) {
+	if (obj == null) {
+		abort();
+	}
 	let res = await hvauto.requestJson(obj);
+	fs.writeFileSync('log.json', JSON.stringify(res));
 	let $ = null;
 
 	$ = cheerio.load(res['pane_effects']);
@@ -409,6 +417,9 @@ hvauto.doAction = async function (obj) {
 	});
 
 	$ = cheerio.load(res['pane_vitals']);
+	if ($('#vbd').length > 0) {
+		return false;
+	}
 	hvauto.battle.charge = 0;
 	$('#vcp').children('div').children().each(function () {
 		if ($(this).attr('id') == 'vcr') {
@@ -476,6 +487,7 @@ hvauto.doAction = async function (obj) {
 	hvauto.battle.monster = [];
 	$('.btm1').each(function () {
 		let obj = {};
+		obj.id = hvauto.battle.monster.length + 1;
 		obj.level = $(this).children('.btm2').children('div').children('div').filter('.fac').children('div').text();
 		obj.name = $(this).children('.btm3').children('div').filter('.fal').children('div').text();
 		$(this).children('.btm4').children('.btm5').children('.chbd').children('img').each(function () {
@@ -498,6 +510,8 @@ hvauto.doAction = async function (obj) {
 		if (text == 'Spirit Stance Engaged') {
 			hvauto.battle.spirit_stance = true;
 		} else if (text == 'Spirit Stance Disabled') {
+			hvauto.battle.spirit_stance = false;
+		} else if (text == 'Spirit Stance Exhausted') {
 			hvauto.battle.spirit_stance = false;
 		}
 		if (hvauto.handleLog != undefined) {

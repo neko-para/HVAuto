@@ -1,15 +1,13 @@
 const fs = require('fs');
-const { abort } = require('process');
+const {
+	abort
+} = require('process');
 
 let rule = fs.readFileSync('AI.txt').toString().split(/\r?\n/);
 
 let rules = [];
-
-let tempRule = {
-	src: [],
-	precond: [],
-	action: null
-};
+let conds = [];
+let filts = [];
 
 const op = {
 	'<': (a, b) => a < b,
@@ -18,7 +16,38 @@ const op = {
 	'>=': (a, b) => a >= b,
 	'=': (a, b) => a == b,
 	'!=': (a, b) => a != b
-}
+};
+
+let dumpMonster = (hvauto) => {
+	let mon = [];
+	hvauto.battle.monster.forEach(t => {
+		if (t.alive) {
+			mon.push(t);
+		}
+	});
+	return [ mon ];
+};
+
+let applyCond = (hvauto, mons, cond, drop) => {
+	let mon = [];
+	mons.forEach(a => {
+		let y = [], n = [];
+		a.forEach(m => {
+			if (cond(m)) {
+				y.push(m);
+			} else {
+				n.push(m);
+			}
+		});
+		if (y.length) {
+			mon.push(y);
+		}
+		if (!drop && n.length) {
+			mon.push(n);
+		}
+	});
+	return mon;
+};
 
 rule.forEach(row => {
 	if (/^[ \t]*$/.exec(row)) {
@@ -26,9 +55,8 @@ rule.forEach(row => {
 	}
 	row = row.replace(/^[\t ]*/, '');
 	row = row.replace(/[\t ]*$/, '');
-	tempRule.src.push(row);
 	if (/^HAS '.+'$/.exec(row)) {
-		tempRule.precond.push((() => {
+		conds.push((() => {
 			let item = /^HAS '(.+)'$/.exec(row)[1];
 			return (hvauto) => {
 				return hvauto.battle.item[999] && hvauto.battle.item[999].name == item;
@@ -37,7 +65,7 @@ rule.forEach(row => {
 		return;
 	}
 	if (/^\S+ (?:<|>|<=|>=|=|!=) [.\d]+$/.exec(row)) {
-		tempRule.precond.push((() => {
+		conds.push((() => {
 			let mat = /^(health|mana|spirit|charge) (<|>|<=|>=|=|!=) ([.\d]+)$/.exec(row);
 			return (hvauto) => {
 				return (op[mat[2]])(hvauto.battle[mat[1]], Number(mat[3]));
@@ -46,7 +74,7 @@ rule.forEach(row => {
 		return;
 	}
 	if (/^EFF '.+'$/.exec(row)) {
-		tempRule.precond.push((() => {
+		conds.push((() => {
 			let item = /^EFF '(.+)'$/.exec(row)[1];
 			return (hvauto) => {
 				return hvauto.findEffect(item) != null;
@@ -55,7 +83,7 @@ rule.forEach(row => {
 		return;
 	}
 	if (/^NOEFF '.+'$/.exec(row)) {
-		tempRule.precond.push((() => {
+		conds.push((() => {
 			let item = /^NOEFF '(.+)'$/.exec(row)[1];
 			return (hvauto) => {
 				return hvauto.findEffect(item) == null;
@@ -63,136 +91,240 @@ rule.forEach(row => {
 		})());
 		return;
 	}
-	if (/^USE '.+'$/.exec(row)) {
-		tempRule.action = (() => {
-			let item = /^USE '(.+)'$/.exec(row)[1];
-			return (hvauto) => {
-				let pos = hvauto.findItem(item);
-				if (pos == -1) {
-					console.log('You don\'t have ' + item);
-				} else {
-					if (hvauto.battle.item[pos].available) {
-						return { 
-							act: hvauto.useItem(0, pos),
-							msg: 'use ' + item
-						};
-					}
-				}
-				return null;
+	if (/^M_EFF '.+'$/.exec(row)) {
+		filts.push((() => {
+			let item = /^M_EFF '(.+)'$/.exec(row)[1];
+			return (hvauto, mons, drop) => {
+				return applyCond(hvauto, mons, (m) => { return hvauto.findEffect(item, m.effect) != null; }, drop);
 			};
-		})();
-		rules.push(tempRule);
-		tempRule = {
-			src: [],
-			precond: [],
-			action: null
-		};
+		})());
+		return;
+	}
+	if (/^M_NOEFF '.+'$/.exec(row)) {
+		filts.push((() => {
+			let item = /^M_NOEFF '(.+)'$/.exec(row)[1];
+			return (hvauto, mons, drop) => {
+				return applyCond(hvauto, mons, (m) => { return hvauto.findEffect(item, m.effect) == null; }, drop);
+			};
+		})());
+		return;
+	}
+	if (/^USE '.+'$/.exec(row)) {
+		rules.push({
+			precond: conds,
+			action: (() => {
+				let item = /^USE '(.+)'$/.exec(row)[1];
+				return (hvauto) => {
+					let pos = hvauto.findItem(item);
+					if (pos == -1) {
+						console.log('You don\'t have ' + item);
+					} else {
+						if (hvauto.battle.item[pos].available) {
+							return {
+								act: hvauto.useItem(0, pos),
+								msg: 'use ' + item
+							};
+						}
+					}
+					return null;
+				};
+			})()
+		});
+		conds = [];
 		return;
 	}
 	if (/^CAST '.+'$/.exec(row)) {
-		tempRule.action = (() => {
-			let skill = /^CAST '(.+)'$/.exec(row)[1];
-			return (hvauto) => {
-				if (hvauto.battle.skills[skill]) {
-					let sk = hvauto.battle.skills[skill];
-					if (hvauto.battle.mana >= sk.mana && hvauto.battle.charge >= sk.charge && sk.available) {
-						return {
-							act: hvauto.triggerSkill(0, sk.id),
-							msg: 'cast ' + skill
-						};
+		rules.push({
+			precond: conds,
+			action: (() => {
+				let skill = /^CAST '(.+)'$/.exec(row)[1];
+				return (hvauto) => {
+					if (hvauto.battle.skills[skill]) {
+						let sk = hvauto.battle.skills[skill];
+						if (hvauto.battle.mana >= sk.mana && hvauto.battle.charge >= sk.charge && sk.available) {
+							return {
+								act: hvauto.triggerSkill(0, sk.id),
+								msg: 'cast ' + skill
+							};
+						}
 					}
-				}
-				return null;
+					return null;
+				};
+			})()
+		});
+		conds = [];
+		return;
+	}
+	if (/^CASTTO '.+'$/.exec(row)) {
+		rules.push({
+			precond: conds,
+			action: (() => {
+				let filt = filts;
+				let skill = /^CASTTO '(.+)'$/.exec(row)[1];
+				return (hvauto) => {
+					let mons = dumpMonster(hvauto);
+					filt.forEach(f => {
+						mons = f(hvauto, mons);
+					});
+					if (mons.length) {
+						if (hvauto.battle.skills[skill]) {
+							let sk = hvauto.battle.skills[skill];
+							if (hvauto.battle.mana >= sk.mana && hvauto.battle.charge >= sk.charge && sk.available) {
+								return {
+									act: hvauto.triggerSkill(mons[0][0].id, sk.id),
+									msg: 'cast ' + skill + ' to ' + mons[0][0].id
+								};
+							}
+						}
+					}
+					return null;
+				};
+			})()
+		});
+		filts = [];
+		conds = [];
+		return;
+	}
+	if (/^SORT \S+ (<|>)$/.exec(row)) {
+		filts.push((() => {
+			let mat = /^SORT (\S+) (<|>|<=|>=)$/.exec(row);
+			return (hvauto, mons) => {
+				mons.forEach(arr => {
+					arr.sort((a, b) => {
+						return (mat[2] == '>' ? -1 : 1) * (a[mat[1]] - b[mat[1]]);
+					})
+				});
+				return mons;
 			};
-		})();
-		rules.push(tempRule);
-		tempRule = {
-			src: [],
-			precond: [],
-			action: null
-		};
+		})());
 		return;
 	}
 	switch (row) {
 		case 'SPIRIT':
-			tempRule.precond.push((hvauto) => { return hvauto.battle.spirit_stance; });
+			conds.push((hvauto) => {
+				return hvauto.battle.spirit_stance;
+			});
 			return;
 		case 'NOTSPIRIT':
-			tempRule.precond.push((hvauto) => { return !hvauto.battle.spirit_stance; });
+			conds.push((hvauto) => {
+				return !hvauto.battle.spirit_stance;
+			});
 			return;
 		case 'AND':
-			tempRule.precond.push((() => {
-				let pre2 = tempRule.precond.pop();
-				let pre1 = tempRule.precond.pop();
-				return function(hvauto) {
+			conds.push((() => {
+				let pre2 = conds.pop();
+				let pre1 = conds.pop();
+				return function (hvauto) {
 					return pre1(hvauto) && pre2(hvauto);
 				}
 			})());
 			return;
 		case 'OR':
-			tempRule.precond.push((() => {
-				let pre2 = tempRule.precond.pop();
-				let pre1 = tempRule.precond.pop();
-				return function(hvauto) {
+			conds.push((() => {
+				let pre2 = conds.pop();
+				let pre1 = conds.pop();
+				return function (hvauto) {
 					return pre1(hvauto) || pre2(hvauto);
 				}
 			})());
 			return;
+		case 'DROP':
+			filts.push((() => {
+				let pre = filts.pop();
+				return function (hvauto, mons) {
+					return pre(hvauto, mons, true);
+				}
+			})());
+			return;
+		case 'M_BOSS':
+			filts.push((hvauto, mons, sep) => {
+				let y = [],
+					n = [];
+				mons.forEach(t => {
+					if (t.isboss) {
+						y.push(t);
+					} else {
+						n.push(t);
+					}
+				});
+				if (sep) {
+					return {
+						y: y,
+						n: n
+					};
+				} else {
+					return y.concat(n);
+				}
+			});
+			return;
+		case 'M_NOTBOSS':
+			filts.push((hvauto, mons, sep) => {
+				let y = [],
+					n = [];
+				mons.forEach(t => {
+					if (!t.isboss) {
+						y.push(t);
+					} else {
+						n.push(t);
+					}
+				});
+				if (sep) {
+					return {
+						y: y,
+						n: n
+					};
+				} else {
+					return y.concat(n);
+				}
+			});
+			return;
 		case 'USE ITEMP':
-			tempRule.action = (hvauto) => {
-				return { 
-					act: hvauto.useItem(0, '999'),
-					msg: 'use itemp'
-				};
-			};
-			rules.push(tempRule);
-			tempRule = {
-				src: [],
-				precond: [],
-				action: null
-			};
+			rules.push({
+				precond: conds,
+				action: (hvauto) => {
+					return {
+						act: hvauto.useItem(0, '999'),
+						msg: 'use itemp'
+					};
+				}
+			});
+			conds = [];
 			return;
 		case 'TRIGSPIRIT':
-			tempRule.action = (hvauto) => {
-				return {
-					act: hvauto.triggerSpirit(),
-					msg: 'trigger spirit'
-				};
-			};
-			rules.push(tempRule);
-			tempRule = {
-				src: [],
-				precond: [],
-				action: null
-			};
+			rules.push({
+				precond: conds,
+				action: (hvauto) => {
+					return {
+						act: hvauto.triggerSpirit(),
+						msg: 'trigger spirit'
+					};
+				}
+			});
+			conds = [];
 			return;
 		case 'ATTACK':
-			tempRule.action = (hvauto) => {
-				let target = 0;
-				let preh = 2;
-				for (let i = 0; i < hvauto.battle.monster.length; ++i) {
-					if (!hvauto.battle.monster[i].alive) {
-						continue;
-					}
-					if (hvauto.battle.monster[i].isboss) {
-						target = i + 1;
-						break;
-					} else if (hvauto.battle.monster[i].health < preh) {
-						target = i + 1;
-						preh = hvauto.battle.monster[i].health;
-					}
-				}
-				return {
-					act: hvauto.normalAttack(target),
-					msg: 'attack ' + target
-				};
-			};
-			rules.push(tempRule);
-			tempRule = {
-				src: [],
-				precond: [],
-				action: null
-			};
+			rules.push({
+				precond: conds,
+				action: (() => {
+					let filt = filts;
+					return (hvauto) => {
+						let mons = dumpMonster(hvauto);
+						filt.forEach(f => {
+							mons = f(hvauto, mons);
+						});
+						if (mons.length) {
+							return {
+								act: hvauto.normalAttack(mons[0][0].id),
+								msg: 'attack ' + mons[0][0].id
+							};
+						} else {
+							return null;
+						}
+					};
+				})()
+			});
+			filts = [];
+			conds = [];
 			return;
 	}
 	console.log('Unknown action/condition <' + row + '>');
@@ -204,22 +336,16 @@ module.exports = function (hvauto) {
 		let r = rules[i];
 		let ok = true;
 		for (let j in r.precond) {
-			// console.log(r.src[j])
 			if (!r.precond[j](hvauto)) {
-				// console.log('failed');
 				ok = false;
 				break;
 			}
-			// console.log('pass');
 		}
 		if (ok) {
-			// console.log(r.src[r.precond.length]);
 			let action = r.action(hvauto);
 			if (action) {
-				// console.log('pass');
 				return action;
 			}
-			// console.log('failed');
 		}
 	}
 	console.log('No action!!!');

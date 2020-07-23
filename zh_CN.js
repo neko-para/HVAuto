@@ -20,13 +20,16 @@ let dict = [
 			'Overwhelming Strikes': '压倒性的攻击',
 			'Stunned': '眩晕',
 			'Penetrated Armor': '破甲',
+			'Bleeding Wound': '流血',
 			'Searing Skin': '烧灼的皮肤',
 			'Blessing of the RiddleMaster': '御谜士的祝福',
 			'Channeling': '引导',
 			'Cure': '治疗术',
 			'Regen': '恢复术',
 			'Protection': '护盾',
+			'Regeneration': '再生',
 			'Replenishment': '补给',
+			'Refreshment': '提神',
 			'Spark of Life': '生命火花',
 			'Shield Bash': '盾击',
 			'Vital Strike': '要害强击',
@@ -111,11 +114,11 @@ let rules = [
 		'pat': '你的@<$1>对@<$2>造成了@($3)点@<$4>伤害。'
 	},
 	{
-		'reg': /^([^,.]+) hits? ([^,.]+) for (\d+) ([^,.]+) damage\.$/,
+		'reg': /^([^,.]+) hits? ([^,.]+) for (\d+) ([^,.]+) damage\.?$/,
 		'pat': '@<$1>对@<$2>造成了@($3)点@<$4>伤害。'
 	},
 	{
-		'reg': /^([^,.]+) crits? ([^,.]+) for (\d+) ([^,.]+) damage\.$/,
+		'reg': /^([^,.]+) crits? ([^,.]+) for (\d+) ([^,.]+) damage\.?$/,
 		'pat': '@<$1>对@<$2>暴击，造成了@($3)点@<$4>伤害。'
 	},
 	{
@@ -203,6 +206,10 @@ let rules = [
 		'pat': '你恢复了@($1)点@<$2>。'
 	},
 	{
+		'reg': /^Your ([^,.]+) restores you from the brink of defeat\.$/,
+		'pat': '你的@<$1>防止了你被击败。'
+	},
+	{
 		'reg': /^([^,.]+) dropped <span style="color:#A89000">\[(\d+) Credits\]<\/span>$/,
 		'pat': '@<$1>掉落了@($2)C。'
 	},
@@ -259,8 +266,12 @@ let rules = [
 		'pat': '禁用灵动架势。'
 	},
 	{
+		'reg': /^Spirit Stance Exhausted$/,
+		'pat': '灵动架势无法继续使用。'
+	},
+	{
 		'reg': /^Initializing Grindfest \(Round (\d+) \/ (\d+)\) \.\.\.$/,
-		'pat': '初始化压榨界，回合@($2)/@($3)。'
+		'pat': '初始化压榨界，回合@($1)/@($2)。'
 	},
 	{
 		'reg': /^Initializing arena challenge #(\d+) \(Round (\d+) \/ (\d+)\) \.\.\.$/,

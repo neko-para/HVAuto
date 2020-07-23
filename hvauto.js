@@ -15,7 +15,7 @@ hvauto.request = async function (url, opt) {
 			res = await got(url, { ...opt, 'timeout': 10000 });
 			break;
 		} catch (e) {
-			console.log('Request failed with: ' + e + '. Retrying...');
+			console.log(e + '. Retrying...');
 		}
 	}
 	return res;
@@ -100,13 +100,18 @@ hvauto.init = async function (cookie) {
 				hvauto.battle.charge += 1;
 			}
 		});
+		hvauto.battle.chargep = hvauto.battle.charge / 10.0;
 		if ($('#vrhb').length > 0) {
 			hvauto.battle.health = $('#vrhb').text();
 		} else {
 			hvauto.battle.health = $('#vrhd').text(); // This seems used when Spark of Life is active
 		}
-		hvauto.battle.mana = $('#vrm').text();
+		let getWidth = s => { return Number(/^width:(\d+)px$/.exec(s)[1]); };
+		hvauto.battle.healthp = getWidth($('#vbh img').attr('style')) / 496.0;
+		hvauto.battle.mana = $('#vrm').text()
+		hvauto.battle.manap = getWidth($('#vbm img').attr('style')) / 207.0;
 		hvauto.battle.spirit = $('#vrs').text();
+		hvauto.battle.spiritp = getWidth($('#vbs img').attr('style')) / 207.0;
 		hvauto.battle.spirit_stance = $('#ckey_spirit').attr('src') == '/y/battle/spirit_a.png';
 		hvauto.battle.skills = {}; // both skills and magic are in it
 		$('#table_skills .bts').children('div').each(function () {
@@ -166,7 +171,7 @@ hvauto.init = async function (cookie) {
 		$('#textlog td').each(function () {
 			let text = $(this).text();
 			hvauto.battle.log.push(text);
-			let mat = /^Initializing .+\(Round ([0-9]+) \/ ([0-9]+)\) ...$/.exec(text); // seems not work yet
+			let mat = /^Initializing .+\(Round ([0-9]+) \/ ([0-9]+)\) ...$/.exec(text);
 			hvauto.battle.round = {};
 			if (mat != null) {
 				hvauto.battle.round.current = Number(mat[1]);
@@ -412,13 +417,18 @@ hvauto.doAction = async function (obj) {
 			hvauto.battle.charge += 1;
 		}
 	});
+	hvauto.battle.chargep = hvauto.battle.charge / 10.0;
 	if ($('#vrhb').length > 0) {
 		hvauto.battle.health = $('#vrhb').text();
 	} else {
 		hvauto.battle.health = $('#vrhd').text(); // This seems used when Spark of Life is active
 	}
-	hvauto.battle.mana = $('#vrm').text();
+	let getWidth = s => { return Number(/^width:(\d+)px$/.exec(s)[1]); };
+	hvauto.battle.healthp = getWidth($('#vbh img').attr('style')) / 496.0;
+	hvauto.battle.mana = $('#vrm').text()
+	hvauto.battle.manap = getWidth($('#vbm img').attr('style')) / 207.0;
 	hvauto.battle.spirit = $('#vrs').text();
+	hvauto.battle.spiritp = getWidth($('#vbs img').attr('style')) / 207.0;
 
 	hvauto.battle.skills = {}; // both skills and magic are in i
 	$ = cheerio.load('<table>' + res['table_skills'] + '</table>');
@@ -477,6 +487,7 @@ hvauto.doAction = async function (obj) {
 		$(this).children('.btm6').children('img').each(function () {
 			obj.effect.push(hvauto.parseEffectScript($(this).attr('onmouseover')));
 		});
+		obj.isboss = $(this).children('.btm2').attr('style') != null;
 		obj.alive = obj.health != undefined;
 		hvauto.battle.monster.push(obj);
 	});

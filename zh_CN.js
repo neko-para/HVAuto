@@ -15,17 +15,22 @@ let dict = [
 		'color': '\x1b[34m'
 	},
 	{
+		'type': 'effect',
 		'keys': {
 			'Overwhelming Strikes': '压倒性的攻击',
 			'Stunned': '眩晕',
 			'Penetrated Armor': '破甲',
 			'Searing Skin': '烧灼的皮肤',
+			'Blessing of the RiddleMaster': '御谜士的祝福',
 			'Channeling': '引导',
 			'Cure': '治疗术',
 			'Regen': '恢复术',
 			'Protection': '护盾',
 			'Replenishment': '补给',
-			'Spark of Life': '生命火花'
+			'Spark of Life': '生命火花',
+			'Shield Bash': '盾击',
+			'Vital Strike': '要害强击',
+			'Merciful Blow': '最后的慈悲'
 		},
 		'color': '\x1b[35m'
 	},
@@ -56,10 +61,19 @@ let dict = [
 			'Crystal of Tempest': '疾风水晶',
 			'Crystal of Devotion': '神圣水晶',
 			'Crystal of Corruption': '暗黑水晶',
+			'Scroll of Swiftness': '加速卷轴',
+			'Scroll of Protection': '保护卷轴',
+			'Scroll of the Avatar': '化身卷轴',
+			'Scroll of Absorption': '吸收卷轴',
+			'Scroll of Shadows': '幻影卷轴',
+			'Scroll of Life': '生命卷轴',
+			'Scroll of Gods': '神之卷轴',
 			'Monster Chow': '怪物饲料',
 			'Monster Edibles': '怪物食品',
-			'Monster Clusine': '怪物料理',
-			'Token of Blood': '鲜血令牌'
+			'Monster Cuisine': '怪物料理',
+			'Token of Blood': '鲜血令牌',
+			'Chaos Token': '混沌令牌',
+			'Soul Fragments': '灵魂碎片'
 		},
 		'color': '\x1b[36m'
 	},
@@ -185,7 +199,7 @@ let rules = [
 		'pat': '你恢复了@($1)点生命。'
 	},
 	{
-		'reg': /^Recovered (\d+) points of (magic|spirit)\.$/,
+		'reg': /^Recovered (\d+) points of (health|magic|spirit)\.$/,
 		'pat': '你恢复了@($1)点@<$2>。'
 	},
 	{
@@ -201,7 +215,11 @@ let rules = [
 		'pat': '@<$1>掉落了@<$2>。'
 	},
 	{
-		'reg': /^Arena Clear Bonus! <span style="color:#[A-F0-9]{6}">\[([^,.]+)\]<\/span>/,
+		'reg': /^You obtained five <span style="color:#254117">\[([^,.]+)\]<\/span>$/,
+		'pat': '你获得了@(5)个@<$1>。'
+	},
+	{
+		'reg': /^Arena (?:Clear|Token) Bonus! <span style="color:#[A-F0-9]{6}">\[([^,.]+)\]<\/span>/,
 		'pat': '竞技场奖励！@<$1>。'
 	},
 	{
@@ -247,43 +265,65 @@ let rules = [
 	{
 		'reg': /^Initializing arena challenge #(\d+) \(Round (\d+) \/ (\d+)\) \.\.\.$/,
 		'pat': '初始化竞技场第@($1)关，回合@($2)/@($3)。'
+	},
+	{
+		'reg': /^Initializing random encounter \.{3}$/,
+		'pat': '初始化随机遭遇。'
 	}
 ];
 
 const updateReg = /@<(.+?)>/;
 const numberReg = /@\(([.\d]+)\)/;
 
-module.exports = function (str) {
-	let newstr = null;
-	for (let i in rules) {
-		let r = rules[i];
-		let mat = r.reg.exec(str);
-		if (mat) {
-			if (r.show) {
-				console.log('\t' + str);
+let key = function (str, nc) {
+	let val = nc ? str : '\x1b[33m' + str + '\x1b[37m';
+	for (let j in dict) {
+		let d = dict[j];
+		let cnt = null;
+		if (d.type == 'effect') {
+			let mat = /^(.+) \(x(\d+)\)$/.exec(str);
+			if (mat) {
+				str = mat[1];
+				cnt = Number(mat[2]);
 			}
-			newstr = str.replace(r.reg, r.pat);
-			mat = numberReg.exec(newstr);
-			while (mat) {
-				newstr = newstr.replace(numberReg, '\x1b[32m$1\x1b[37m');
-				mat = numberReg.exec(newstr);
-			}
-			mat = updateReg.exec(newstr);
-			while (mat) {
-				let key = mat[1];
-				let val = '\x1b[33m' + key + '\x1b[37m';
-				for (let j in dict) {
-					let d = dict[j];
-					if (d.keys[key]) {
-						val = d.color ? d.color + d.keys[key] + '\x1b[37m' : d.keys[key];
-						break;
-					}
-				}
-				newstr = newstr.replace(updateReg, val);
-				mat = updateReg.exec(newstr);
+		}
+		if (d.keys[str]) {
+			if (cnt) {
+				val = nc ? d.keys[str] + '*' + cnt : (d.color ? d.color + d.keys[str] + '*' + cnt + '\x1b[37m' : d.keys[str] + '*' + cnt);
+			} else {
+				val = nc ? d.keys[str] : (d.color ? d.color + d.keys[str] + '\x1b[37m' : d.keys[str]);
 			}
 			break;
 		}
 	}
-	return newstr || '\x1b[31m' + str + '\x1b[37m';
+	return val;
+}
+
+module.exports = {
+	key: key,
+	log: function (str) {
+		let newstr = null;
+		for (let i in rules) {
+			let r = rules[i];
+			let mat = r.reg.exec(str);
+			if (mat) {
+				if (r.show) {
+					console.log('\t' + str);
+				}
+				newstr = str.replace(r.reg, r.pat);
+				mat = numberReg.exec(newstr);
+				while (mat) {
+					newstr = newstr.replace(numberReg, '\x1b[32m$1\x1b[37m');
+					mat = numberReg.exec(newstr);
+				}
+				mat = updateReg.exec(newstr);
+				while (mat) {
+					newstr = newstr.replace(updateReg, key(mat[1]));
+					mat = updateReg.exec(newstr);
+				}
+				break;
+			}
+		}
+		return newstr || '\x1b[31m' + str + '\x1b[37m';
+	}
 };

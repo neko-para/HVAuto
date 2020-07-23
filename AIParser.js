@@ -120,6 +120,24 @@ rule.forEach(row => {
 		case 'NOTSPIRIT':
 			tempRule.precond.push((hvauto) => { return !hvauto.battle.spirit_stance; });
 			return;
+		case 'AND':
+			tempRule.precond.push((() => {
+				let pre2 = tempRule.precond.pop();
+				let pre1 = tempRule.precond.pop();
+				return function(hvauto) {
+					return pre1(hvauto) && pre2(hvauto);
+				}
+			})());
+			return;
+		case 'OR':
+			tempRule.precond.push((() => {
+				let pre2 = tempRule.precond.pop();
+				let pre1 = tempRule.precond.pop();
+				return function(hvauto) {
+					return pre1(hvauto) || pre2(hvauto);
+				}
+			})());
+			return;
 		case 'USE ITEMP':
 			tempRule.action = (hvauto) => {
 				return { 

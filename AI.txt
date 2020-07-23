@@ -12,7 +12,12 @@ HAS 'Spirit Gem'
 
 HAS 'Mystic Gem'
 	NOEFF 'Channeling'
-		USE ITEMP
+		NOEFF 'Protection'
+			NOEFF 'Regen'
+			health < 4000
+			AND
+		OR
+			USE ITEMP
 
 health < 4000
 	NOEFF 'Regen'

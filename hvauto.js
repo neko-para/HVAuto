@@ -410,10 +410,19 @@ hvauto.doAction = async function (obj) {
 	fs.writeFileSync('log.json', JSON.stringify(res));
 	let $ = null;
 
-	$ = cheerio.load(res['pane_effects']);
-	hvauto.battle.effect = [];
-	$('img').each(function () {
-		hvauto.battle.effect.push(hvauto.parseEffectScript($(this).attr('onmouseover')));
+	res['textlog'].forEach(t => {
+		let text = t['t'];
+		hvauto.battle.log.push(text);
+		if (text == 'Spirit Stance Engaged') {
+			hvauto.battle.spirit_stance = true;
+		} else if (text == 'Spirit Stance Disabled') {
+			hvauto.battle.spirit_stance = false;
+		} else if (text == 'Spirit Stance Exhausted') {
+			hvauto.battle.spirit_stance = false;
+		}
+		if (hvauto.handleLog != undefined) {
+			hvauto.handleLog(text);
+		}
 	});
 
 	$ = cheerio.load(res['pane_vitals']);
@@ -440,6 +449,12 @@ hvauto.doAction = async function (obj) {
 	hvauto.battle.manap = getWidth($('#vbm img').attr('style')) / 207.0;
 	hvauto.battle.spirit = $('#vrs').text();
 	hvauto.battle.spiritp = getWidth($('#vbs img').attr('style')) / 207.0;
+
+	$ = cheerio.load(res['pane_effects']);
+	hvauto.battle.effect = [];
+	$('img').each(function () {
+		hvauto.battle.effect.push(hvauto.parseEffectScript($(this).attr('onmouseover')));
+	});
 
 	hvauto.battle.skills = {}; // both skills and magic are in i
 	$ = cheerio.load('<table>' + res['table_skills'] + '</table>');
@@ -502,21 +517,6 @@ hvauto.doAction = async function (obj) {
 		obj.isboss = $(this).children('.btm2').attr('style') != null;
 		obj.alive = obj.health != undefined;
 		hvauto.battle.monster.push(obj);
-	});
-
-	res['textlog'].forEach(t => {
-		let text = t['t'];
-		hvauto.battle.log.push(text);
-		if (text == 'Spirit Stance Engaged') {
-			hvauto.battle.spirit_stance = true;
-		} else if (text == 'Spirit Stance Disabled') {
-			hvauto.battle.spirit_stance = false;
-		} else if (text == 'Spirit Stance Exhausted') {
-			hvauto.battle.spirit_stance = false;
-		}
-		if (hvauto.handleLog != undefined) {
-			hvauto.handleLog(text);
-		}
 	});
 
 	let stillRunning = false;

@@ -2,15 +2,14 @@
   "name": "hvauto",
   "version": "1.0.0",
   "description": "HentaiVerse Auto Tool",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
     "pkg": "node .\\node_modules\\pkg\\lib-es5\\bin.js . --out-path=dist\\"
   },
-  "bin": "./main.js",
+  "bin": "./index.js",
   "pkg": {
     "scripts": [
-      "main.js",
-      "hvauto.js"
+      "index.js"
     ],
     "targets": [
       "node12-win-x64"

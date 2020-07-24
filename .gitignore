@@ -105,3 +105,4 @@ dist
 
 # Skip Cookies
 cookie.txt
+log*

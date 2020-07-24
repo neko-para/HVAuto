@@ -237,46 +237,18 @@ rule.forEach(row => {
 			})());
 			return;
 		case 'M_BOSS':
-			filts.push((hvauto, mons, sep) => {
-				let y = [],
-					n = [];
-				mons.forEach(t => {
-					if (t.isboss) {
-						y.push(t);
-					} else {
-						n.push(t);
-					}
-				});
-				if (sep) {
-					return {
-						y: y,
-						n: n
-					};
-				} else {
-					return y.concat(n);
-				}
-			});
+			filts.push((() => {
+				return (hvauto, mons, drop) => {
+					return applyCond(hvauto, mons, (m) => { return m.isboss; }, drop);
+				};
+			})());
 			return;
 		case 'M_NOTBOSS':
-			filts.push((hvauto, mons, sep) => {
-				let y = [],
-					n = [];
-				mons.forEach(t => {
-					if (!t.isboss) {
-						y.push(t);
-					} else {
-						n.push(t);
-					}
-				});
-				if (sep) {
-					return {
-						y: y,
-						n: n
-					};
-				} else {
-					return y.concat(n);
-				}
-			});
+			filts.push((() => {
+				return (hvauto, mons, drop) => {
+					return applyCond(hvauto, mons, (m) => { return !m.isboss; }, drop);
+				};
+			})());
 			return;
 		case 'USE ITEMP':
 			rules.push({

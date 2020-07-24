@@ -1,0 +1,11 @@
+{
+	"root": "https://neko-para.github.io/HVAuto",
+	"file": [
+		"updater.json",
+		"AI.js",
+		"AIParser.js",
+		"hvauto.js",
+		"main.js",
+		"zh_CN.js"
+	]
+}

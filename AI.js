@@ -1,6 +1,7 @@
 const process = require('process');
 let AIParser = require('./AIParser');
 let zh_CN = require('./zh_CN');
+const fs = require('fs');
 
 let expand = function (str, len) {
 	str = String(str);
@@ -34,11 +35,15 @@ let buildEff = function (eff, nc) {
 module.exports = {
 	init: function (hvauto) {
 		hvauto.handleLog = t => {
-			console.log(zh_CN.log(t));
+			let zh = zh_CN.log(t);
+			console.log(zh);
+			fs.appendFileSync('log.txt', t + '\n');
+			fs.appendFileSync('log_zh.txt', zh.replace(/\x1b\[\d\dm/g, '') + '\n');
 		};
 	},
 	do: function (hvauto) {
 		let battle = hvauto.battle;
+		console.log('-'.repeat(60));
 		process.stdout.write('\x1b[s');
 		move(1, 1);
 		process.stdout.write('\x1b[30m');
@@ -53,10 +58,10 @@ module.exports = {
 		console.log(buildEff(battle.effect) + '\x1b[K');
 		let round = '';
 		if (battle.round.current) {
-			round = expand(battle.round.current + ' / ' + battle.round.all, 10);
+			round = expand(battle.round.current + ' / ' + battle.round.all, 15);
 		}
 		let act = AIParser(hvauto);
-		console.log(round + '操作: ' + act.msg + '\x1b[K');
+		console.log(round + act.msg + '\x1b[K');
 		console.log('-'.repeat(80));
 		for (let i = 0; i < hvauto.battle.monster.length; ++i) {
 			move(i * 2 + 1, 81);

@@ -9,5 +9,6 @@
         "ecmaVersion": 11
     },
     "rules": {
+        "no-control-regex": "off"
     }
 }

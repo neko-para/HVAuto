@@ -22,31 +22,22 @@ health < 4000
 	NOEFF 'Protection'
 		CAST 'Protection'
 
-health < 2000
+health < 3000
 	CAST 'Cure'
 
-health < 1000
+health < 2000
 	USE 'Health Draught'
 
 health < 1000
 	USE 'Health Potion'
 
-mana < 150
+mana < 300
 	NOEFF 'Replenishment'
 		USE 'Mana Draught'
 
-spirit < 170
+spirit < 250
 	NOEFF 'Refreshment'
 		USE 'Spirit Draught'
-
-NOTSPIRIT
-	spirit >= 250
-		charge >= 9
-			TRIGSPIRIT
-
-SPIRIT
-	spirit < 200
-		TRIGSPIRIT
 
 charge >= 7
 	M_BOSS
@@ -59,6 +50,13 @@ charge >= 7
 		M_BOSS
 		SORT health >
 			CASTTO 'Vital Strike'
+
+charge >= 7
+	M_EFF 'Bleeding Wound'
+	DROP
+		M_BOSS
+		SORT health >
+			CASTTO 'Merciful Blow'
 
 M_NOEFF 'Stunned'
 	M_BOSS

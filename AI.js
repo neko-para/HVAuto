@@ -35,7 +35,7 @@ let buildEff = function (eff, nc) {
 module.exports = {
 	init: function (hvauto) {
 		hvauto.handleLog = t => {
-			let zh = zh_CN.log(t);
+			let zh = (zh_CN.log)(t);
 			console.log(zh);
 			// fs.appendFileSync('log.txt', t + '\n');
 			// fs.appendFileSync('log_zh.txt', zh.replace(/\x1b\[\d\dm/g, '') + '\n');

@@ -77,7 +77,7 @@ rule.forEach(row => {
 		conds.push((() => {
 			let mat = /^EXPIRE '(.+)' (<|>|<=|>=|=|!=) ([.\d]+)$/.exec(row);
 			return (hvauto) => {
-				let eff = hvauto.battle.findEffect(mat[1]);
+				let eff = hvauto.findEffect(mat[1]);
 				let exp = eff ? (eff.expire == -1 ? 1000000000 : eff.expire) : -1;
 				return (op[mat[2]])(exp, Number(mat[3]));
 			};

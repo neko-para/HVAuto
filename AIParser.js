@@ -64,11 +64,22 @@ rule.forEach(row => {
 		})());
 		return;
 	}
-	if (/^\S+ (?:<|>|<=|>=|=|!=) [.\d]+$/.exec(row)) {
+	if (/^(?:health|mana|spirit|charge) (?:<|>|<=|>=|=|!=) [.\d]+$/.exec(row)) {
 		conds.push((() => {
 			let mat = /^(health|mana|spirit|charge) (<|>|<=|>=|=|!=) ([.\d]+)$/.exec(row);
 			return (hvauto) => {
 				return (op[mat[2]])(hvauto.battle[mat[1]], Number(mat[3]));
+			};
+		})());
+		return;
+	}
+	if (/^EXPIRE '.+' (?:<|>|<=|>=|=|!=) [.\d]+$/.exec(row)) {
+		conds.push((() => {
+			let mat = /^EXPIRE '(.+)' (<|>|<=|>=|=|!=) ([.\d]+)$/.exec(row);
+			return (hvauto) => {
+				let eff = hvauto.battle.findEffect(mat[1]);
+				let exp = eff ? (eff.expire == -1 ? 1000000000 : eff.expire) : -1;
+				return (op[mat[2]])(exp, Number(mat[3]));
 			};
 		})());
 		return;

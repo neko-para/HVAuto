@@ -12,7 +12,10 @@ HAS 'Spirit Gem'
 
 HAS 'Mystic Gem'
 	NOEFF 'Channeling'
-		USE ITEMP
+		EXPIRE 'Regen' < 5
+		EXPIRE 'Protection' < 5
+		OR
+			USE ITEMP
 
 health < 5000
 	NOEFF 'Regen'
@@ -38,6 +41,12 @@ mana < 300
 spirit < 250
 	NOEFF 'Refreshment'
 		USE 'Spirit Draught'
+
+EFF 'Channeling'
+	EXPIRE 'Regen' > 5
+		EXPIRE 'Protection' > 5
+			NOEFF 'Shadow Veil'
+				CAST 'Shadow Veil'
 
 charge >= 7
 	M_BOSS

@@ -34,6 +34,7 @@ let dict = [
 			'Shield Bash': '盾击',
 			'Vital Strike': '要害强击',
 			'Merciful Blow': '最后的慈悲',
+			'Iris Strike': '虹膜打击',
 
 			'Stunned': '眩晕',
 			'Penetrated Armor': '破甲',
@@ -287,6 +288,10 @@ let rules = [
 		pat: '灵动架势无法继续使用。'
 	},
 	{
+		reg: /^You have reached level (\d+)!$/,
+		pat: '你达到了级别@($1)！'
+	},
+	{
 		reg: /^The RiddleMaster is pleased with your answer, and grants you his blessings\.$/,
 		pat: '御谜士对你的答案很满意，并且给予了你他的祝福。'
 	},
@@ -404,6 +409,7 @@ let eqp = function (str) {
 			Gloves: '手套',
 			Gauntlets: '手甲',
 			Pants: '裤',
+			Leggings: '护腿',
 			Greaves: '护胫',
 			Shoes: '鞋',
 			Boots: '靴子',

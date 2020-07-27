@@ -288,7 +288,7 @@ let rules = [
 		pat: '灵动架势无法继续使用。'
 	},
 	{
-		reg: /^You have reached level (\d+)!$/,
+		reg: /^You have reached Level (\d+)!$/,
 		pat: '你达到了级别@($1)！'
 	},
 	{

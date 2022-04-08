@@ -143,11 +143,16 @@ hvauto.init = async function (cookie) {
 		}
 		$('#pane_item').children('.c').children().children('.c').children('.bti1').each(function () {
 			let obj = {};
-			obj.id = Number($(this).children('.bti2').children().children().text());
+			let id_class = $(this).children('.bti2').children().children()[1].attribs['class'];
+			obj.id = Number(id_class.charAt(id_class.length - 1));
 			if ($(this).children('.bti3').children().length == 0) {
 				return true;
 			}
-			obj.name = $(this).children('.bti3').children().children().children().text();
+			obj.name = "";
+			$(this).children('.bti3').children().children().children().each(function() {
+				obj.name += this.attribs['class'].charAt(this.attribs['class'].length - 1)
+			});
+			obj.name = obj.name.replace("9", " ")
 			obj.available = $(this).children('.bti3').children().attr('onclick') != undefined;
 			hvauto.battle.item[obj.id] = obj;
 		});
@@ -405,6 +410,7 @@ hvauto.findEffect = function (name, from) {
 }
 
 hvauto.findItem = function (name) {
+	name = name.toLowerCase();
 	for (let key in hvauto.battle.item) {
 		if (hvauto.battle.item[key].name == name) {
 			return key;

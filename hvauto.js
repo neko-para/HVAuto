@@ -215,6 +215,17 @@ hvauto.normalAttack = function (target) {
 	};
 };
 
+hvauto.normalDefend = function () {
+	return {
+		'method': 'action',
+		'mode': 'defend',
+		'skill': 0,
+		'target': 0,
+		'token': hvauto.battle.token,
+		'type': 'battle'
+	};
+};
+
 hvauto.triggerSkill = function (target, skill) {
 	/*
 		@skill<int>	should be the id of skill

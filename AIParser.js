@@ -285,6 +285,18 @@ rule.forEach(row => {
 			});
 			conds = [];
 			return;
+		case 'DEFEND':
+			rules.push({
+				precond: conds,
+				action: (hvauto) => {
+					return {
+						act: hvauto.normalDefend(),
+						msg: 'defend'
+					};
+				}
+			});
+			conds = [];
+			return;
 		case 'ATTACK':
 			rules.push({
 				precond: conds,

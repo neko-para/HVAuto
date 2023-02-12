@@ -22,7 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "got": "^11.5.1"
+    "got": "^12.5.3"
   },
   "devDependencies": {
     "eslint": "^7.5.0",
